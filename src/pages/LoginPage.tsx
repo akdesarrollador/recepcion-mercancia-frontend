@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import ak_login from "../images/ak-login.png";
@@ -5,17 +6,20 @@ import fc_login from "../images/fc-login.png";
 import hc_login from "../images/hc-login.png";
 import { sxImageBox, sxLoginFormBox } from "../styles/sxLoginPage";
 import ColoredTextInput from "../components/inputs/coloredTextInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LockKeyhole } from "lucide-react";
 import SimpleButton from "../components/buttons/simpleButton";
 import theme from "../theme/theme";
 import { useNavigate } from "react-router-dom";
+import FullScreenModal from "../components/modals/fullScreenModal";
 
 const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   // const isLoggedIn = true;
   const org = import.meta.env.VITE_ORGANIZATION;
+    const [showFullScreenModal, setShowFullScreenModal] = useState(false);
+
   const navigate = useNavigate();
 
   // if(isLoggedIn) navigate("/");
@@ -29,8 +33,37 @@ const LoginPage = () => {
     }, 2000);
   };
 
+  useEffect(() => {
+    const checkFullScreen = () => {
+      const isFullScreen =
+        document.fullscreenElement ||
+        // Soporte para navegadores antiguos
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement;
+      setShowFullScreenModal(!isFullScreen);
+    };
+
+    checkFullScreen();
+    document.addEventListener("fullscreenchange", checkFullScreen);
+    document.addEventListener("webkitfullscreenchange", checkFullScreen);
+    document.addEventListener("mozfullscreenchange", checkFullScreen);
+    document.addEventListener("MSFullscreenChange", checkFullScreen);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", checkFullScreen);
+      document.removeEventListener("webkitfullscreenchange", checkFullScreen);
+      document.removeEventListener("mozfullscreenchange", checkFullScreen);
+      document.removeEventListener("MSFullscreenChange", checkFullScreen);
+    };
+  }, []);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", mt: -1, p: 0 }}>
+      {/* Modal para sugerir pantalla completa */}
+      <FullScreenModal open={showFullScreenModal} onClose={() => setShowFullScreenModal(false)} />
+
+
       {/* Imagen con la caja */}
       <Box
         component="img"

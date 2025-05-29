@@ -46,6 +46,7 @@ export interface SimpleTextInputProps {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   textAlign?: "left" | "center" | "right";
   disabled?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 export interface AddButtonProps {

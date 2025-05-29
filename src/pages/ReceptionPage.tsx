@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { Button, MobileStepper, Paper, Typography } from "@mui/material";
+import { Alert, Button, MobileStepper, Paper, Typography } from "@mui/material";
 import { useState } from "react";
 import theme from "../theme/theme";
 import { ChevronRight, ChevronLeft } from "lucide-react";
@@ -12,16 +12,26 @@ import {
 } from "../styles/sxReceptionPage";
 import ReceptionSteps from "../config/receptionSteps";
 import useGlobalStore from "../store/useGlobalStore";
+import ReceptionConfirmationModal from "../components/modals/receptionConfirmationModal";
+import Snackbar from "@mui/material/Snackbar";
+import { SnackBarProps } from "../utils/interfaces/componentsProps";
 
 const ReceptionPage = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [sbProps, setSbProps] = useState<SnackBarProps>({
+      severity: "error",
+      message: "",
+    });
   const navigate = useNavigate();
   const maxSteps = 3;
-  const { purchaseOrderData, productsReceived } = useGlobalStore();
+  const { purchaseOrderData, productsReceived, resetStore, billImage } =
+    useGlobalStore();
 
   const handleNext = () => {
     if (activeStep === 2) {
-      navigate("/");
+      setOpenModal(true);
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -34,6 +44,25 @@ const ReceptionPage = () => {
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
+  };
+
+  const handleFinishReception = () => {
+    //enviar products received desde global store a la api
+    //enviar la factura desde global store a la api
+    if (
+      billImage === null ) {
+      setSbProps({
+      severity: "error",
+      message: "Debe adjuntar una imagen de la factura.",
+      });
+      setOpenSnackbar(true);
+      return;
+    }
+
+    //resetear global store
+    resetStore();
+    setOpenModal(false);
+    navigate("/");
   };
 
   return (
@@ -73,12 +102,13 @@ const ReceptionPage = () => {
               size="small"
               onClick={handleNext}
               disabled={
-              purchaseOrderData === null ||
-              (activeStep === 1 && productsReceived.length === 0)
+                purchaseOrderData === null ||
+                (activeStep === 1 && productsReceived.length === 0) ||
+                (activeStep === 2 && billImage === null)
               }
               sx={{
-              color: "white",
-              textTransform: "none",
+                color: "white",
+                textTransform: "none",
               }}
             >
               {activeStep === 2 ? "Finalizar" : "Siguiente"}
@@ -101,6 +131,30 @@ const ReceptionPage = () => {
           }
         />
       </Box>
+
+      <ReceptionConfirmationModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onAccept={handleFinishReception}
+      />
+
+      {/* Snackbar de feedback */}
+            <Snackbar
+              open={openSnackbar}
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+              sx={{ marginBottom: "60%", width: "85%", marginLeft: "5%" }}
+              autoHideDuration={1500}
+              onClose={() => setOpenSnackbar(false)}
+            >
+              <Alert
+                severity={sbProps.severity}
+                variant="filled"
+                sx={{ width: "100%", borderRadius: "20px" }}
+                onClose={() => setOpenSnackbar(false)}
+              >
+                {sbProps.message}
+              </Alert>
+            </Snackbar>
     </Box>
   );
 };

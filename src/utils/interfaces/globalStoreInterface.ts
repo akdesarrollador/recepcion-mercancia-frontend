@@ -21,4 +21,7 @@ export default interface GlobalStoreInterface {
   addProductReceived: (product: ProductReceivedInterface) => void;
   cleanProductsReceived: () => void;
   deleteProductReceived: (productNumber: string) => void;
+  resetStore: () => void;
+  billImage: File | null;
+  setBillImage: (image: File | null) => void;
 }

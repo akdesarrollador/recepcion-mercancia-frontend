@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { PackageOpen } from "lucide-react";
 import SimpleTextInput from "../inputs/simpleTextInput";
@@ -130,6 +130,27 @@ const CheckMerchandise: React.FC = () => {
     [receivedProduct, productAmount, currentUnit.label, unitsPerPackage]
   );
 
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = ""; // Chrome requiere returnValue para mostrar el diálogo
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <Box sx={sxFatherBox}>
       {/* Loader */}
@@ -217,6 +238,7 @@ const CheckMerchandise: React.FC = () => {
             ...sxReceiveProductButton,
             color: theme.palette.primary.main,
             border: `1px solid ${theme.palette.primary.main}`,
+            backgroundColor: `${theme.palette.primary.main}1A`,
             pointerEvents: isButtonDisabled ? "none" : "auto",
             opacity: isButtonDisabled ? 0.3 : 1,
           }}

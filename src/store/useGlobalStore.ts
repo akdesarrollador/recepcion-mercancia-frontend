@@ -19,13 +19,22 @@ const useGlobalStore = create<GlobalStoreInterface>()(
             (product) => product.productCode !== productCode
           )
         });
-      }
+      },
+      resetStore: () => set({
+        billImage: null,
+        purchaseOrderData: null,
+        productsReceived: []
+      }),
+      billImage: null,
+      setBillImage: (image: File | null) => set({ billImage: image })
+
     }),
     {
       name: "global-storage-rdm",
       partialize: (state) => ({
         purchaseOrderData: state.purchaseOrderData,
-        productsReceived: state.productsReceived
+        productsReceived: state.productsReceived,
+        billImage: state.billImage
       })
     }
   )

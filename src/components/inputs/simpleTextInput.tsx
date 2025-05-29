@@ -21,11 +21,13 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
   onKeyDown,
   textAlign = "left",
   disabled = false,
+  inputRef
 }) => {
   const showClearIcon = Boolean(value);
 
 return (
     <TextField
+        ref={inputRef}
         disabled={disabled}
         fullWidth
         variant="outlined"
