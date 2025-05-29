@@ -21,10 +21,10 @@ const useFullScreen = (): void => {
       }
     };
 
-    window.addEventListener("dblclick", toggleFullscreen);
+    window.addEventListener("click", toggleFullscreen);
 
     return () => {
-      window.removeEventListener("dblclick", toggleFullscreen);
+      window.removeEventListener("click", toggleFullscreen);
     };
   }, []);
 };

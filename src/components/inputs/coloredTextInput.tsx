@@ -15,6 +15,9 @@ const ColoredTextInput: React.FC<ColoredTextInputProps> = ({
     setValue,
     icon,
     password = false,
+    ref,
+    autoFocus = false,
+    autoComplete = "off",
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -46,7 +49,10 @@ const ColoredTextInput: React.FC<ColoredTextInputProps> = ({
 
     return (
         <TextField
+            inputRef={ref}
             fullWidth
+            autoComplete={autoComplete}
+            autoFocus={autoFocus}
             variant="outlined"
             label={label}
             placeholder={placeholder}

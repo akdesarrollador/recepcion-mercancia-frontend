@@ -31,4 +31,5 @@ export const sxMobileStepper = {
   fontWeight: "bold",
   fontFamily: "Roboto, sans-serif",
   textTransform: "none",
+  userSelect: "none",
 };

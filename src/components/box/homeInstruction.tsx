@@ -33,6 +33,7 @@ const HomeInstruction = ({ title, icon }: HomeInstructionProps) => {
           color: "#b4b4b4",
           textAlign: "justify",
           alignContent: "center",
+          userSelect: "none",
         }}
       >
         {title}

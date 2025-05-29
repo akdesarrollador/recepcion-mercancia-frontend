@@ -26,6 +26,9 @@ export interface ColoredTextInputProps {
   setValue: (value: string) => void;
   icon?: React.ReactNode;
   password?: boolean;
+  ref?: React.RefObject<HTMLInputElement | null>;
+  autoComplete?: "off" | "on";
+  autoFocus?: boolean;
 }
 
 export interface SimpleTextInputProps {
@@ -47,6 +50,8 @@ export interface SimpleTextInputProps {
   textAlign?: "left" | "center" | "right";
   disabled?: boolean;
   inputRef?: React.RefObject<HTMLInputElement | null>;
+  autoComplete?: "off" | "on";
+  autoFocus?: boolean;
 }
 
 export interface AddButtonProps {

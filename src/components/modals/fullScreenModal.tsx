@@ -42,7 +42,7 @@ const FullScreenModal = ({ open, onClose }: FullScreenModalProps) => {
           textAlign: "justify",
         }}
       >
-        Toca dos veces cualquier parte de la aplicación para activar la
+        Toca cualquier parte de la aplicación para activar la
         pantalla completa en cualquier momento y disfrutar de una mejor
         experiencia de usuario.
       </Typography>

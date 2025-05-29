@@ -18,6 +18,7 @@ import { getPurchaseOrderData } from "../../utils/purchaseOrderData";
 import OrderInfoBox from "../box/orderInfoBox";
 import Typography from "@mui/material/Typography";
 import Fade from "@mui/material/Fade"; // Importa Fade
+import useInputFocus from "../../hooks/useInputFocus";
 
 const ScanOrder = () => {
   const [orderNumber, setOrderNumber] = useState("");
@@ -25,6 +26,7 @@ const ScanOrder = () => {
   const [showNotFound, setShowNotFound] = useState(false); // Nuevo estado
   const iconButtonRef = useRef<HTMLButtonElement>(null);
   const { purchaseOrderData, setPurchaseOrderData } = useGlobalStore();
+  const textFieldRef = useInputFocus(); // Hook para manejar el foco del input
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +46,7 @@ const ScanOrder = () => {
 
         setLoading(false);
         setOrderNumber("");
-      }, 2000);
+      }, 500);
     }
   };
 
@@ -67,6 +69,9 @@ const ScanOrder = () => {
       <Box sx={sxSecondaryBox}>
         <Box component="form" onSubmit={handleSubmit} sx={sxFormBox}>
           <SimpleTextInput
+          autoComplete="off"
+            autoFocus={true}
+            inputRef={textFieldRef} // Asigna el ref al input
             inputHeight="45px"
             inputWidth="100%"
             borderColor="DADADA"

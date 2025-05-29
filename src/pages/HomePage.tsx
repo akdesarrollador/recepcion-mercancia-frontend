@@ -14,10 +14,13 @@ import {
 } from "../styles/sxHomePage";
 import { useNavigate } from "react-router-dom";
 import useGlobalStore from "../store/useGlobalStore";
+import useFullScreenModal from "../hooks/useFullScreenModal";
+import FullScreenModal from "../components/modals/fullScreenModal";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { setPurchaseOrderData, cleanProductsReceived } = useGlobalStore();
+  const [showFullScreenModal, setShowFullScreenModal] = useFullScreenModal();
 
   useEffect(() => {
     setPurchaseOrderData(null);
@@ -26,6 +29,11 @@ const HomePage = () => {
 
   return (
     <Box sx={sxFatherBox}>
+      <FullScreenModal
+        open={showFullScreenModal}
+        onClose={() => setShowFullScreenModal(false)}
+      />
+      
       <Typography sx={sxPageTitle}>Recepción de Mercancía</Typography>
       <Box sx={sxInstructionsBox}>
         <HomeInstruction

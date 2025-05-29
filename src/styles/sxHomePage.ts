@@ -14,6 +14,7 @@ export const sxPageTitle = {
   width: "100%",
   textAlign: "center",
   lineHeight: "30px",
+  userSelect: "none"
 };
 
 export const sxInstructionsBox = {

@@ -49,6 +49,8 @@ const CheckMerchandise: React.FC = () => {
     setProductAmount("");
     setUnitsPerPackage(0);
     setCurrentUnit(DEFAULT_UNIT);
+    const input = document.querySelector<HTMLInputElement>('input[placeholder="ej. 0000567483904246"]');
+    if (input) input.focus();
   }, []);
 
   // Calcula el total a recibir
@@ -116,7 +118,7 @@ const CheckMerchandise: React.FC = () => {
         } else {
           setLoading(false);
         }
-      }, 2000);
+      }, 500);
     },
     [receivedProduct, productAmount, purchaseOrderData?.items, productsReceived, addProductReceived, unitsPerPackage, cleanAllFields]
   );
@@ -198,6 +200,8 @@ const CheckMerchandise: React.FC = () => {
       <Box component="form" onSubmit={handleSubmit} sx={sxFormBox}>
         <Box sx={sxFormFirstRowBox}>
           <SimpleTextInput
+          autoComplete="off"
+            autoFocus={true}
             inputHeight="45px"
             inputWidth="100%"
             borderColor="#DADADA"
@@ -250,8 +254,8 @@ const CheckMerchandise: React.FC = () => {
       {/* Snackbar de feedback */}
       <Snackbar
         open={openSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        sx={{ marginBottom: "60%", width: "85%", marginLeft: "5%" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{  width: "85%", marginLeft: "5%", mt: "15%" }}
         autoHideDuration={1500}
         onClose={() => setOpenSnackbar(false)}
       >

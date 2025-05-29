@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import ak_login from "../images/ak-login.png";
@@ -6,20 +5,22 @@ import fc_login from "../images/fc-login.png";
 import hc_login from "../images/hc-login.png";
 import { sxImageBox, sxLoginFormBox } from "../styles/sxLoginPage";
 import ColoredTextInput from "../components/inputs/coloredTextInput";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LockKeyhole } from "lucide-react";
 import SimpleButton from "../components/buttons/simpleButton";
 import theme from "../theme/theme";
 import { useNavigate } from "react-router-dom";
 import FullScreenModal from "../components/modals/fullScreenModal";
+import useFullScreenModal from "../hooks/useFullScreenModal";
+import useInputFocus from "../hooks/useInputFocus";
 
 const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   // const isLoggedIn = true;
   const org = import.meta.env.VITE_ORGANIZATION;
-    const [showFullScreenModal, setShowFullScreenModal] = useState(false);
-
+  const [showFullScreenModal, setShowFullScreenModal] = useFullScreenModal();
+  const textFieldRef = useInputFocus();
   const navigate = useNavigate();
 
   // if(isLoggedIn) navigate("/");
@@ -30,39 +31,16 @@ const LoginPage = () => {
       setIsLoading(false);
       setPassword("");
       navigate("/");
-    }, 2000);
+    }, 500);
   };
-
-  useEffect(() => {
-    const checkFullScreen = () => {
-      const isFullScreen =
-        document.fullscreenElement ||
-        // Soporte para navegadores antiguos
-        (document as any).webkitFullscreenElement ||
-        (document as any).mozFullScreenElement ||
-        (document as any).msFullscreenElement;
-      setShowFullScreenModal(!isFullScreen);
-    };
-
-    checkFullScreen();
-    document.addEventListener("fullscreenchange", checkFullScreen);
-    document.addEventListener("webkitfullscreenchange", checkFullScreen);
-    document.addEventListener("mozfullscreenchange", checkFullScreen);
-    document.addEventListener("MSFullscreenChange", checkFullScreen);
-
-    return () => {
-      document.removeEventListener("fullscreenchange", checkFullScreen);
-      document.removeEventListener("webkitfullscreenchange", checkFullScreen);
-      document.removeEventListener("mozfullscreenchange", checkFullScreen);
-      document.removeEventListener("MSFullscreenChange", checkFullScreen);
-    };
-  }, []);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", mt: -1, p: 0 }}>
       {/* Modal para sugerir pantalla completa */}
-      <FullScreenModal open={showFullScreenModal} onClose={() => setShowFullScreenModal(false)} />
-
+      <FullScreenModal
+        open={showFullScreenModal}
+        onClose={() => setShowFullScreenModal(false)}
+      />
 
       {/* Imagen con la caja */}
       <Box
@@ -72,8 +50,18 @@ const LoginPage = () => {
       />
 
       {/* Texto de bienvenida */}
-      <Box display="flex" justifyContent="center" alignItems="center" sx={{ zIndex: 10, position: "relative" }} mt={-5}>
-        <Typography fontWeight="bold" fontSize="32px">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        sx={{ zIndex: 10, position: "relative" }}
+        mt={-5}
+      >
+        <Typography
+          fontWeight="bold"
+          fontSize="32px"
+          sx={{ userSelect: "none" }}
+        >
           ¡Bienvenido!
         </Typography>
       </Box>
@@ -88,6 +76,9 @@ const LoginPage = () => {
         sx={sxLoginFormBox}
       >
         <ColoredTextInput
+          ref={textFieldRef}
+          autoFocus={true}
+          autoComplete="off"
           value={password}
           setValue={setPassword}
           placeholder="Ingresa tu clave de acceso asignada"
