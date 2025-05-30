@@ -19,7 +19,7 @@ import {
 } from "../styles/sxReceptionPage";
 import ReceptionSteps from "../config/receptionSteps";
 import useGlobalStore from "../store/useGlobalStore";
-import ReceptionConfirmationModal from "../components/modals/receptionConfirmationModal";
+import ConfirmationModal from "../components/modals/confirmationModal";
 import Snackbar from "@mui/material/Snackbar";
 import { SnackBarProps } from "../utils/interfaces/componentsProps";
 import SpinnerLoader from "../components/loader/spinnerLoader";
@@ -169,10 +169,13 @@ const ReceptionPage = () => {
         />
       </Box>
 
-      <ReceptionConfirmationModal
+      <ConfirmationModal
         open={openModal}
         onClose={() => setOpenModal(false)}
         onAccept={handleFinishReception}
+        label="¿Está seguro de finalizar la recepción?"
+        textCancelButton="Cancelar"
+        textAcceptButton="Finalizar"
       />
 
       {/* Snackbar de feedback */}

@@ -26,7 +26,7 @@ const useGlobalStore = create<GlobalStoreInterface>()(
         productsReceived: []
       }),
       billImage: null,
-      setBillImage: (image: File | null) => set({ billImage: image })
+      setBillImage: (image: File[] | null) => set({ billImage: image })
 
     }),
     {

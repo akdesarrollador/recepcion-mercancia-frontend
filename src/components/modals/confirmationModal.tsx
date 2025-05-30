@@ -4,17 +4,27 @@ import Dialog from "@mui/material/Dialog";
 import Typography from "@mui/material/Typography";
 import theme from "../../theme/theme";
 
-interface ReceptionProgressModalProps {
+interface ConfirmationModalProps {
   open: boolean;
   onClose: () => void;
   onAccept?: () => void;
+  label: string;
+  colorAcceptButton?: string;
+  textAcceptButton?: string;
+  colorCancelButton?: string;
+  textCancelButton?: string;
 }
 
-const ReceptionConfirmationModal = ({
+const ConfirmationModal = ({
   open,
   onClose,
   onAccept,
-}: ReceptionProgressModalProps) => {
+  label,
+  colorAcceptButton,
+  textAcceptButton,
+  colorCancelButton,
+  textCancelButton,
+}: ConfirmationModalProps) => {
   return (
     <Dialog
       open={open}
@@ -45,7 +55,7 @@ const ReceptionConfirmationModal = ({
           textAlign: "center",
         }}
       >
-        ¿Finalizar la recepción?
+        {label}
       </Typography>
       {/* Agrega más contenido según sea necesario */}
       <Box sx={{ mt: 2, gap: 1.5, display: "flex", flexDirection: "row" }}>
@@ -53,7 +63,7 @@ const ReceptionConfirmationModal = ({
           onClick={onClose}
           sx={{
             width: "50%",
-            backgroundColor: "#b4b4b4",
+            backgroundColor: colorCancelButton || "#b4b4b4",
             color: "#FFFFFF",
             borderRadius: "10px",
             fontSize: "10px",
@@ -61,13 +71,13 @@ const ReceptionConfirmationModal = ({
             fontWeight: "bold",
           }}
         >
-          Regresar
+          {textCancelButton || "Cancelar"}
         </Button>
         <Button
           onClick={onAccept}
           sx={{
             width: "50%",
-            backgroundColor: theme.palette.primary.main,
+            backgroundColor: colorAcceptButton || theme.palette.primary.main,
             color: "#FFFFFF",
             borderRadius: "10px",
             fontSize: "10px",
@@ -75,11 +85,11 @@ const ReceptionConfirmationModal = ({
             fontWeight: "bold",
           }}
         >
-          Aceptar
+          {textAcceptButton || "Aceptar"}
         </Button>
       </Box>
     </Dialog>
   );
 };
 
-export default ReceptionConfirmationModal;
+export default ConfirmationModal;

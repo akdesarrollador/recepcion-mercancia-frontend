@@ -104,8 +104,8 @@ const ConfirmReception = () => {
           borderColor={theme.palette.primary.main}
           borderRadius="10px"
           width="100%"
-          height="44px"
-          fontSize="12px"
+          height="80px"
+          fontSize="14px"
           padding="8px 12px"
         />
       </Box>

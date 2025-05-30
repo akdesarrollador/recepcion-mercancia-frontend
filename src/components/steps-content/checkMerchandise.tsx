@@ -132,6 +132,12 @@ const CheckMerchandise: React.FC = () => {
     [receivedProduct, productAmount, currentUnit.label, unitsPerPackage]
   );
 
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+    const input = document.querySelector<HTMLInputElement>('input[placeholder="ej. 0000567483904246"]');
+    if (input) input.focus();
+  }
+
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
 
@@ -254,16 +260,16 @@ const CheckMerchandise: React.FC = () => {
       {/* Snackbar de feedback */}
       <Snackbar
         open={openSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        sx={{  width: "85%", marginLeft: "5%", mt: "15%" }}
-        autoHideDuration={1500}
-        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{  width: "85%", marginLeft: "5%", mb: "6%" }}
+        autoHideDuration={2000}
+        onClose={handleSnackbarClose}
       >
         <Alert
           severity={sbProps.severity}
           variant="filled"
           sx={{ width: "100%", borderRadius: "20px" }}
-          onClose={() => setOpenSnackbar(false)}
+          onClose={handleSnackbarClose}
         >
           {sbProps.message}
         </Alert>

@@ -80,14 +80,14 @@ export interface SimpleFieldProps {
 }
 
 export interface InputWithSelectorProps {
-  selectedUnit?: Option
-  textValue?: string
-  onUnitChange?: (unit: Option) => void
-  onTextChange?: (value: string) => void
-  options?: Option[]
-  placeholder?: string
-  disabled?: boolean
-  fullWidth?: boolean
+  selectedUnit?: Option;
+  textValue?: string;
+  onUnitChange?: (unit: Option) => void;
+  onTextChange?: (value: string) => void;
+  options?: Option[];
+  placeholder?: string;
+  disabled?: boolean;
+  fullWidth?: boolean;
 }
 
 export interface SnackBarProps {
@@ -96,6 +96,20 @@ export interface SnackBarProps {
 }
 
 export type Option = {
-  value: string // Texto completo
-  label: string // Abreviación
+  value: string; // Texto completo
+  label: string; // Abreviación
+};
+
+export interface AttachFileProps {
+  icon: React.ReactNode;
+  text: string;
+  onSubmit?: (file: File[] | null) => void;
+  fontColor?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+  borderRadius?: string;
+  width?: string;
+  height?: string;
+  fontSize?: string;
+  padding?: string;
 }

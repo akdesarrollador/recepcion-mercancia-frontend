@@ -1,22 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import styled from "styled-components";
-import { ImageUp, X } from 'lucide-react';
+import { X } from "lucide-react";
 import useGlobalStore from "../../store/useGlobalStore";
-
-export interface AttachFileProps {
-  icon: React.ReactNode;
-  text: string;
-  onSubmit?: (file: File | null) => void;
-  fontColor?: string;
-  backgroundColor?: string;
-  borderColor?: string;
-  borderRadius?: string;
-  width?: string;
-  height?: string;
-  fontSize?: string;
-  padding?: string;
-}
+import Box from "@mui/material/Box";
+import { sxIconBox, sxImgBox } from "../../styles/sxAttachFile";
+import { AttachFileProps } from "../../utils/interfaces/componentsProps";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -39,19 +28,9 @@ const PreviewBox = styled.div`
 const FilePreview = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: center;
-  width: 100%;
+  align-items: flex-end;
   gap: 10px;
   font-size: 11px;
-`;
-
-const ImagePreview = styled.img`
-  width: 30px;
-  height: 30px;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 4px;
-  border: 1px solid #e0e0e0;
 `;
 
 const AttachFile: React.FC<AttachFileProps> = ({
@@ -67,42 +46,42 @@ const AttachFile: React.FC<AttachFileProps> = ({
   padding,
   onSubmit,
 }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
-  const { setBillImage } = useGlobalStore()
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const { setBillImage } = useGlobalStore();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
+    const files = event.target.files ? Array.from(event.target.files) : [];
+    if (!files.length) return;
 
-    setSelectedFile(file);
-    setBillImage(file);
-    if (onSubmit) onSubmit(file);
+    const newFiles = [...selectedFiles, ...files].slice(0, 3);
 
-    if (file.type.startsWith("image/")) {
-      const url = URL.createObjectURL(file);
-      setPreview(url);
-    } else {
-      setPreview("");
+    setSelectedFiles(newFiles);
+    setBillImage(newFiles.length > 0 ? newFiles : null);
+    if (onSubmit) onSubmit(newFiles.length > 0 ? newFiles : null);
+
+    event.target.value = "";
+  };
+
+  const handleRemove = (idx: number) => {
+    const newFiles = selectedFiles.filter((_, i) => i !== idx);
+    setSelectedFiles(newFiles);
+    setBillImage(newFiles.length > 0 ? newFiles : null);
+    if (onSubmit) onSubmit(newFiles.length > 0 ? newFiles : null);
+  };
+
+  const handleButtonClick = () => {
+    if (selectedFiles.length < 3) {
+      inputRef.current?.click();
     }
   };
 
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedFile(null);
-    setPreview("");
-    setBillImage(null);
-    if (onSubmit) onSubmit(null);
-  };
-
   return (
-    <div>
+    <>
       <Button
-        component="label"
-        role={undefined}
         variant="contained"
         tabIndex={-1}
-        startIcon={selectedFile ? undefined : icon}
+        startIcon={selectedFiles.length ? undefined : icon}
         sx={{
           fontFamily: "Roboto, sans-serif",
           fontWeight: "bold",
@@ -116,43 +95,65 @@ const AttachFile: React.FC<AttachFileProps> = ({
           border: `1.5px solid ${borderColor || "transparent"}`,
           borderStyle: "dashed",
           textTransform: "none",
-          boxShadow: selectedFile ? "none" : "3px 3px 3px rgba(0, 0, 0, 0.1)",
-          opacity: selectedFile ? 0.3 : 1,
+          boxShadow: selectedFiles.length
+            ? "none"
+            : "3px 3px 3px rgba(0, 0, 0, 0.1)",
+          opacity: selectedFiles.length >= 3 ? 0.5 : 1,
         }}
+        onClick={handleButtonClick}
       >
-        {selectedFile ? (
+        {selectedFiles.length > 0 ? (
           <PreviewBox>
             <FilePreview>
-              {selectedFile.type.startsWith("image/") && preview ? (
-                <ImagePreview src={preview} alt={selectedFile.name} />
-              ) : (
-                <ImageUp style={{ fontSize: 40, color: "#bdbdbd", marginBottom: "4px" }} />
-              )}
-              <span title={selectedFile.name}>
-                {selectedFile.name.length > 15
-                  ? selectedFile.name.slice(0, 12) + "..."
-                  : selectedFile.name}
-              </span>
-              <X
-                style={{ cursor: "pointer", marginLeft: 8 }}
-                onClick={handleClear}
-                size={18}
-              />
+              {selectedFiles.map((file, idx) => (
+                <Box
+                  key={file.name + idx}
+                  sx={{
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginRight: "8px",
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={URL.createObjectURL(file)}
+                    alt={file.name}
+                    sx={sxImgBox}
+                  />
+
+                  <Box
+                    sx={sxIconBox}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(idx);
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <X size={18} color="#d32f2f" />
+                  </Box>
+                </Box>
+              ))}
             </FilePreview>
+            
           </PreviewBox>
         ) : (
-          <>
-            {text}
-            <VisuallyHiddenInput
-              type="file"
-              accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt"
-              multiple={false}
-              onChange={handleChange}
-            />
-          </>
+          <>{text}</>
         )}
       </Button>
-    </div>
+      <VisuallyHiddenInput
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleChange}
+        disabled={selectedFiles.length >= 3}
+        max={3}
+        maxLength={3}
+      />
+
+    </>
   );
 };
 

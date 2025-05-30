@@ -10,6 +10,8 @@ import useGlobalStore from "../../store/useGlobalStore";
 import { Trash2 } from "lucide-react";
 import theme from "../../theme/theme";
 import IconButton from "@mui/material/IconButton";
+import ConfirmationModal from "../modals/confirmationModal";
+import { useState } from "react";
 
 const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
@@ -35,6 +37,7 @@ const StyledTableRow = styled(TableRow)(() => ({
 
 const ItemsEnteredTable = () => {
   const { productsReceived, deleteProductReceived } = useGlobalStore();
+  const [openModal, setOpenModal] = useState(false);
 
   return (
     <TableContainer
@@ -56,7 +59,9 @@ const ItemsEnteredTable = () => {
               <StyledTableCell component="th" scope="row">
                 {row.productCode}
               </StyledTableCell>
-              <StyledTableCell align="center">{row.productDescription}</StyledTableCell>
+              <StyledTableCell align="center">
+                {row.productDescription}
+              </StyledTableCell>
               <StyledTableCell align="center">
                 {row.productUnitsPerPackage && row.productUnitsPerPackage > 0
                   ? row.productUnits * row.productUnitsPerPackage
@@ -64,14 +69,31 @@ const ItemsEnteredTable = () => {
               </StyledTableCell>
               <StyledTableCell align="center">
                 <IconButton>
-
-                <Trash2 size={16} color="#c03c3c" onClick={() => deleteProductReceived(row.productCode)} />
+                  <Trash2
+                    size={16}
+                    color="#d33333"
+                    onClick={() => setOpenModal(true)}
+                  />
                 </IconButton>
               </StyledTableCell>
+
+              <ConfirmationModal
+              open={openModal}
+                label="¿Desea eliminar este producto?"
+                onAccept={() => {
+                  deleteProductReceived(row.productCode);
+                  setOpenModal(false);
+                }}
+                onClose={() => setOpenModal(false)}
+                textCancelButton="Cancelar"
+                textAcceptButton="Eliminar"
+                colorAcceptButton="#c03c3c"
+              />
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
+
     </TableContainer>
   );
 };

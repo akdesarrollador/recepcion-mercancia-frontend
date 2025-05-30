@@ -4,7 +4,7 @@ export const sxFatherBox = {
   alignItems: "center",
   justifyContent: "space-between",
   width: "100%",
-  height: "80%",
+  height: "90%",
 };
 
 export const sxIconProgressNumberBox = {
