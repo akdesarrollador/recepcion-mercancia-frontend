@@ -38,8 +38,9 @@ export const sxReceiveProductButton = {
 
 export const sxFormFirstRowBox = {
   display: "flex",
-  alignItems: "center",
-  gap: "10px",
+  alignItems: "right",
+  flexDirection: "column",
+  // gap: "10px",
   width: "100%",
 };
 
@@ -51,7 +52,7 @@ export const sxFormSecondRowBox = {
 
 export const sxSeeProgressButton = {
   borderRadius: "10px",
-  width: "35%",
+  width: "50%",
   height: "35px",
   padding: "3px 6px",
   backgroundColor: "#FFF",

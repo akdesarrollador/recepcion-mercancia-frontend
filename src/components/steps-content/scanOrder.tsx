@@ -14,41 +14,56 @@ import {
 import Backdrop from "@mui/material/Backdrop";
 import SpinnerLoader from "../loader/spinnerLoader";
 import useGlobalStore from "../../store/useGlobalStore";
-import { getPurchaseOrderData } from "../../utils/purchaseOrderData";
 import OrderInfoBox from "../box/orderInfoBox";
-import Typography from "@mui/material/Typography";
-import Fade from "@mui/material/Fade"; // Importa Fade
 import useInputFocus from "../../hooks/useInputFocus";
+import { getPurchaseOrder } from "../../api/purchaseOrder";
 
 const ScanOrder = () => {
   const [orderNumber, setOrderNumber] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showNotFound, setShowNotFound] = useState(false); // Nuevo estado
   const iconButtonRef = useRef<HTMLButtonElement>(null);
-  const { purchaseOrderData, setPurchaseOrderData } = useGlobalStore();
+  const { purchaseOrderData, setPurchaseOrderData, openSnackbar } =
+    useGlobalStore();
   const textFieldRef = useInputFocus(); // Hook para manejar el foco del input
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (orderNumber.trim()) {
+  const handleSubmit = React.useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      const trimmedOrder = orderNumber.trim();
+      if (!trimmedOrder) return;
+
       setLoading(true);
-      setTimeout(() => {
-        const orderData = getPurchaseOrderData(orderNumber);
-
-        if (orderData) {
-          setPurchaseOrderData(orderData);
-          setShowNotFound(false); // Oculta el mensaje si encuentra la orden
+      try {
+        const response = await getPurchaseOrder(trimmedOrder);
+        if (response?.status === 200) {
+          setPurchaseOrderData(response.data);
+          if (response?.data?.productos?.length === 0) {
+            openSnackbar(
+              "La orden no tiene productos en esta sede.",
+              "warning"
+            );
+          }
         } else {
+          openSnackbar(
+            "No se encontró la orden de compra.",
+            "error"
+          );
           setPurchaseOrderData(null);
-          setShowNotFound(true); // Muestra el mensaje si no encuentra la orden
-          setTimeout(() => setShowNotFound(false), 2000); // Oculta el mensaje después de 2 segundos
         }
-
+      } catch (error) {
+        openSnackbar(
+          "Error al buscar la orden de compra. Por favor, inténtalo de nuevo.",
+          "error"
+        );
+        setPurchaseOrderData(null);
+        console.error("Error al buscar la orden de compra:", error);
+      } finally {
         setLoading(false);
         setOrderNumber("");
-      }, 500);
-    }
-  };
+      }
+    },
+    [orderNumber, setPurchaseOrderData, openSnackbar]
+  );
 
   return (
     <Box sx={sxFatherBox}>
@@ -69,7 +84,7 @@ const ScanOrder = () => {
       <Box sx={sxSecondaryBox}>
         <Box component="form" onSubmit={handleSubmit} sx={sxFormBox}>
           <SimpleTextInput
-          autoComplete="off"
+            autoComplete="off"
             autoFocus={true}
             inputRef={textFieldRef} // Asigna el ref al input
             inputHeight="45px"
@@ -103,31 +118,21 @@ const ScanOrder = () => {
       </Box>
 
       <Box sx={sxOrderInfoBoxes}>
-        {purchaseOrderData ? (
+        {purchaseOrderData && (
           <>
             <OrderInfoBox
+              label="Recibiendo en"
+              value={purchaseOrderData?.ordenCompra?.recibirEn}
+            />
+            <OrderInfoBox
               label="Orden de compra"
-              value={purchaseOrderData?.orderNumber}
+              value={purchaseOrderData?.ordenCompra.numeroOrden}
             />
             <OrderInfoBox
               label="Proveedor"
-              value={purchaseOrderData?.supplierName}
+              value={purchaseOrderData?.ordenCompra?.proveedor?.nombre}
             />
           </>
-        ) : (
-          <Fade in={showNotFound}>
-            <Typography
-              sx={{
-                color: "#FF0000",
-                fontWeight: "bold",
-                fontSize: "14px",
-                minHeight: "18px", // Para evitar salto de layout
-                transition: "opacity 1s",
-              }}
-            >
-              Orden de compra no encontrada.
-            </Typography>
-          </Fade>
         )}
       </Box>
     </Box>

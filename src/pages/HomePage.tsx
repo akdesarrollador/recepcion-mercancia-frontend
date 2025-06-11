@@ -16,11 +16,15 @@ import { useNavigate } from "react-router-dom";
 import useGlobalStore from "../store/useGlobalStore";
 import useFullScreenModal from "../hooks/useFullScreenModal";
 import FullScreenModal from "../components/modals/fullScreenModal";
+import { useAuthStore } from "../store/useAuthStore";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { setPurchaseOrderData, cleanProductsReceived } = useGlobalStore();
   const [showFullScreenModal, setShowFullScreenModal] = useFullScreenModal();
+  const { isLoggedIn } = useAuthStore();
+
+  if (!isLoggedIn) navigate("/iniciar-sesion")
 
   useEffect(() => {
     setPurchaseOrderData(null);

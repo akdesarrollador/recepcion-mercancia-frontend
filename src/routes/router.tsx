@@ -20,9 +20,7 @@ const Router = () => {
           <Route path="/" element={<HomePage />} />
         </Route>
 
-        {/* <Route path="/" element={<RootLayout organization={org} noLogout />}> */}
-          <Route path="/recepcion" element={<ReceptionPage />} />
-        {/* </Route> */}
+        <Route path="/recepcion" element={<ReceptionPage />} />
       </Routes>
     </BrowserRouter>
   );

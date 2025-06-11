@@ -45,7 +45,7 @@ const ReceptionProgressModal = ({
             textAlign: "center",
           }}
         >
-          Ítems ingresados: {productsReceived.length || 0} / {purchaseOrderData?.items.length || 0}
+          Ítems ingresados: {productsReceived.length || 0} / {purchaseOrderData?.productos?.length || 0}
         </Typography>
       </Box>
 

@@ -25,9 +25,9 @@ const ConfirmReception = () => {
           <ClipboardCheck color={theme.palette.primary.main} size={60} />
           <CircularWithValueLabel
             value={
-              purchaseOrderData?.items.length &&
-              purchaseOrderData.items.length > 0
-                ? (productsReceived.length / purchaseOrderData.items.length) *
+              purchaseOrderData?.productos?.length &&
+              purchaseOrderData?.productos?.length > 0
+                ? (productsReceived.length / purchaseOrderData?.productos?.length) *
                   100
                 : 0
             }
@@ -42,7 +42,7 @@ const ConfirmReception = () => {
             inputWidth="100%"
             inputHeight="35px"
             readonly
-            value={purchaseOrderData?.orderNumber}
+            value={purchaseOrderData?.ordenCompra?.numeroOrden || ""}
             setValue={() => {}}
           />
         </Box>
@@ -60,8 +60,8 @@ const ConfirmReception = () => {
           Productos en la orden
           <SimpleTextInput
             value={
-              purchaseOrderData?.items.length !== undefined
-                ? purchaseOrderData.items.length.toString()
+              purchaseOrderData?.productos.length !== undefined
+                ? purchaseOrderData.productos.length.toString()
                 : ""
             }
             setValue={() => {}}

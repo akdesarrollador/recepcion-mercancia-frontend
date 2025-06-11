@@ -13,25 +13,31 @@ import { useNavigate } from "react-router-dom";
 import FullScreenModal from "../components/modals/fullScreenModal";
 import useFullScreenModal from "../hooks/useFullScreenModal";
 import useInputFocus from "../hooks/useInputFocus";
+import { useAuthStore } from "../store/useAuthStore";
+import useGlobalStore from "../store/useGlobalStore";
 
 const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  // const isLoggedIn = true;
   const org = import.meta.env.VITE_ORGANIZATION;
   const [showFullScreenModal, setShowFullScreenModal] = useFullScreenModal();
   const textFieldRef = useInputFocus();
   const navigate = useNavigate();
+  const { onLogin, isLoggedIn } = useAuthStore()
+  const { openSnackbar } = useGlobalStore()
 
-  // if(isLoggedIn) navigate("/");
+  if(isLoggedIn) navigate("/");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setPassword("");
+    try {
+      const response = await onLogin(password)
+      openSnackbar(response.message, (response.codigo === 200 ? 'success' : 'error'))
       navigate("/");
-    }, 500);
+    }  finally {
+      setPassword("");
+      setIsLoading(false);
+    }
   };
 
   return (

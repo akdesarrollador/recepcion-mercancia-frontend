@@ -1,0 +1,73 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
+import { createReception } from "../api/reception";
+import { createReceivedProduct } from "../api/receivedProduct";
+import { createBillImage } from "../api/billsImage";
+import { useAuthStore } from "../store/useAuthStore";
+
+// hooks/useReceptionSubmission.ts
+export const useReceptionSubmission = ({
+  purchaseOrderData,
+  productsReceived,
+  billImages,
+  resetStore,
+  openSnackbar,
+  navigate,
+}: any) => {
+  const [loading, setLoading] = useState(false);
+  const { tienda } = useAuthStore();
+
+  const finishReception = async (
+    onSuccess?: () => void,
+    onError?: () => void
+  ) => {
+    setLoading(true);
+    try {
+      if (!billImages?.length) throw new Error("No hay imágenes");
+
+      const result = await createReception({
+        numeroOrden: purchaseOrderData?.ordenCompra?.numeroOrden ?? "",
+        proveedor: purchaseOrderData?.ordenCompra?.proveedor?.nombre ?? "",
+      });
+
+      if (result.status === 201) {
+        await Promise.all([
+          ...productsReceived.map((product: any) =>
+            createReceivedProduct(
+              product.code,
+              product.description,
+              product.units_odc,
+              product.unitsPerPackage > 0
+                ? product.unitsPerPackage * product.units
+                : product.units,
+              result.data.recepcion
+            )
+          ),
+          ...billImages.map((img: File) =>
+            createBillImage(
+              img,
+              result.data.recepcion,
+              tienda || "",
+              purchaseOrderData?.ordenCompra?.numeroOrden ?? ""
+            )
+          ),
+        ]);
+
+        resetStore();
+        navigate("/");
+        openSnackbar("Recepción finalizada correctamente", "success");
+        onSuccess?.();
+      } else {
+        throw new Error("Falló la creación");
+      }
+    } catch (error) {
+      openSnackbar("Error al finalizar la recepción", "error");
+      console.error(error);
+      onError?.();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { loading, finishReception };
+};

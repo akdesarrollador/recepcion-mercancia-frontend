@@ -1,9 +1,11 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { PackageOpen } from "lucide-react";
-import SimpleTextInput from "../inputs/simpleTextInput";
-import useGlobalStore from "../../store/useGlobalStore";
 import Button from "@mui/material/Button";
+import Backdrop from "@mui/material/Backdrop";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import { PackageOpen } from "lucide-react";
+import theme from "../../theme/theme";
 import {
   sxFatherBox,
   sxIconAndNumberBox,
@@ -14,165 +16,59 @@ import {
   sxSeeProgressButton,
   sxOrderNumberAndButtonBox,
 } from "../../styles/sxCheckMerchandise";
+import { useCheckMerchandise } from "../../hooks/useCheckMerchandise";
+import SimpleTextInput from "../inputs/simpleTextInput";
 import InputWithSelector from "../inputs/inputWithSelector";
-import { Option } from "../../utils/interfaces/componentsProps";
-import Backdrop from "@mui/material/Backdrop";
-import SpinnerLoader from "../loader/spinnerLoader";
-import { PurchaseOrderItemInterface } from "../../utils/interfaces/purchaseOrderInterface";
-import { Snackbar, Alert } from "@mui/material";
-import { SnackBarProps } from "../../utils/interfaces/componentsProps";
-import theme from "../../theme/theme";
 import ReceptionProgressModal from "../modals/receptionProgressModal";
-
-const DEFAULT_UNIT: Option = {
-  value: "Unidades",
-  label: "U",
-};
+import SpinnerLoader from "../loader/spinnerLoader";
+import useGlobalStore from "../../store/useGlobalStore";
+import Typography from "@mui/material/Typography";
 
 const CheckMerchandise: React.FC = () => {
-  const { purchaseOrderData, addProductReceived, productsReceived } = useGlobalStore();
-  const [receivedProduct, setReceivedProduct] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [productAmount, setProductAmount] = useState<string>("");
-  const [unitsPerPackage, setUnitsPerPackage] = useState<number>(0);
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [sbProps, setSbProps] = useState<SnackBarProps>({
-    severity: "error",
-    message: "",
-  });
-  const [currentUnit, setCurrentUnit] = useState<Option>(DEFAULT_UNIT);
-
-  // Limpia todos los campos del formulario
-  const cleanAllFields = useCallback(() => {
-    setReceivedProduct("");
-    setProductAmount("");
-    setUnitsPerPackage(0);
-    setCurrentUnit(DEFAULT_UNIT);
-    const input = document.querySelector<HTMLInputElement>('input[placeholder="ej. 0000567483904246"]');
-    if (input) input.focus();
-  }, []);
-
-  // Calcula el total a recibir
-  const totalToReceive = useMemo(() => {
-    if (!productAmount) return 0;
-    if (!unitsPerPackage || currentUnit.label !== "B")
-      return Number(productAmount) || 0;
-    const total = Number(productAmount) * unitsPerPackage;
-    return isNaN(total) ? 0 : total;
-  }, [productAmount, unitsPerPackage, currentUnit.label]);
-
-  // Maneja el submit del formulario
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      setLoading(true);
-
-      setTimeout(() => {
-        if (receivedProduct.trim() && productAmount !== "") {
-          const matchedProduct = purchaseOrderData?.items.find(
-            (item: PurchaseOrderItemInterface) =>
-              item.itemCode === receivedProduct.trim()
-          );
-
-          if (!matchedProduct) {
-            setLoading(false);
-            cleanAllFields();
-            setSbProps({
-              severity: "error",
-              message: "El producto no está en la orden.",
-            });
-            setOpenSnackbar(true);
-            return;
-          }
-
-          const alreadyReceived = productsReceived.find(
-            (item) => item.productCode === receivedProduct.trim()
-          );
-          if (alreadyReceived) {
-            setLoading(false);
-            cleanAllFields();
-            setSbProps({
-              severity: "error",
-              message: `El producto ${receivedProduct} ya ha sido recibido.`,
-            });
-            setOpenSnackbar(true);
-            return;
-          }
-
-          addProductReceived({
-            productCode: receivedProduct,
-            productDescription: matchedProduct.description,
-            productUnits: Number(productAmount),
-            productUnitsPerPackage:
-              unitsPerPackage > 0 ? unitsPerPackage : undefined,
-          });
-
-          setLoading(false);
-          setSbProps({
-            severity: "success",
-            message: `Producto recibido: ${matchedProduct.description}.`,
-          });
-          cleanAllFields();
-          setOpenSnackbar(true);
-        } else {
-          setLoading(false);
-        }
-      }, 500);
-    },
-    [receivedProduct, productAmount, purchaseOrderData?.items, productsReceived, addProductReceived, unitsPerPackage, cleanAllFields]
-  );
-
-  // Deshabilita el botón si faltan datos
-  const isButtonDisabled = useMemo(
-    () =>
-      !receivedProduct ||
-      !productAmount ||
-      (currentUnit.label === "B" && !unitsPerPackage),
-    [receivedProduct, productAmount, currentUnit.label, unitsPerPackage]
-  );
-
-  const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
-    const input = document.querySelector<HTMLInputElement>('input[placeholder="ej. 0000567483904246"]');
-    if (input) input.focus();
-  }
+  const { purchaseOrderData, productsReceived } = useGlobalStore();
+  const [openModal, setOpenModal] = useState(false);
+  const {
+    receivedProduct,
+    setReceivedProduct,
+    productAmount,
+    setProductAmount,
+    unitsPerPackage,
+    setUnitsPerPackage,
+    currentUnit,
+    setCurrentUnit,
+    totalToReceive,
+    isButtonDisabled,
+    handleSubmit,
+    snackbar,
+    setSnackbar,
+    loading,
+  } = useCheckMerchandise();
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
-
-    const handlePopState = () => {
+    const blockBack = () =>
       window.history.pushState(null, "", window.location.href);
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    const confirmExit = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = ""; // Chrome requiere returnValue para mostrar el diálogo
+      e.returnValue = "";
     };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
+    window.addEventListener("popstate", blockBack);
+    window.addEventListener("beforeunload", confirmExit);
     return () => {
-      window.removeEventListener("popstate", handlePopState);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", blockBack);
+      window.removeEventListener("beforeunload", confirmExit);
     };
   }, []);
 
   return (
     <Box sx={sxFatherBox}>
-      {/* Loader */}
       <Backdrop
-        sx={{
-          color: "#fff",
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
       >
         <SpinnerLoader />
       </Backdrop>
 
-      {/* Icono, número de orden y boton de ver progreso */}
       <Box sx={sxIconAndNumberBox}>
         <PackageOpen
           color={theme.palette.primary.main}
@@ -181,13 +77,13 @@ const CheckMerchandise: React.FC = () => {
         />
         <Box sx={sxOrderNumberAndButtonBox}>
           <SimpleTextInput
-            textAlign="center"
-            fontSize="12px"
-            inputWidth="65%"
-            inputHeight="35px"
             readonly
-            value={purchaseOrderData?.orderNumber}
+            inputWidth="50%"
+            inputHeight="35px"
+            fontSize="12px"
+            value={purchaseOrderData?.ordenCompra.numeroOrden || ""}
             setValue={() => {}}
+            textAlign="center"
           />
           <Button
             onClick={() => setOpenModal(true)}
@@ -202,12 +98,11 @@ const CheckMerchandise: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Formulario */}
       <Box component="form" onSubmit={handleSubmit} sx={sxFormBox}>
         <Box sx={sxFormFirstRowBox}>
           <SimpleTextInput
-          autoComplete="off"
-            autoFocus={true}
+            autoComplete="off"
+            autoFocus
             inputHeight="45px"
             inputWidth="100%"
             borderColor="#DADADA"
@@ -216,8 +111,20 @@ const CheckMerchandise: React.FC = () => {
             value={receivedProduct}
             setValue={setReceivedProduct}
             fontSize="12px"
-            disabled={productsReceived.length === purchaseOrderData?.items.length}
+            disabled={
+              productsReceived.length === purchaseOrderData?.productos?.length
+            }
           />
+          <Typography
+            noWrap
+            sx={{ fontSize: "8px", textAlign: "left", ml: "5px" }}
+          >
+            {
+              purchaseOrderData?.productos?.find(
+                (item) => item.codigo === receivedProduct.trim()
+              )?.descripcion
+            }
+          </Typography>
         </Box>
 
         <Box sx={sxFormSecondRowBox}>
@@ -227,9 +134,10 @@ const CheckMerchandise: React.FC = () => {
             selectedUnit={currentUnit}
             onUnitChange={setCurrentUnit}
             placeholder="Cantidad"
-            disabled={productsReceived.length === purchaseOrderData?.items.length}
+            disabled={
+              productsReceived.length === purchaseOrderData?.productos?.length
+            }
           />
-
           <SimpleTextInput
             disabled={currentUnit.label !== "B" || receivedProduct === ""}
             label="Unidades x Bulto"
@@ -257,25 +165,28 @@ const CheckMerchandise: React.FC = () => {
         </Button>
       </Box>
 
-      {/* Snackbar de feedback */}
+      {/* Snackbar */}
       <Snackbar
-        open={openSnackbar}
+        open={!!snackbar}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        sx={{  width: "85%", marginLeft: "5%", mb: "6%" }}
+        sx={{ width: "85%", marginLeft: "5%", mb: "6%" }}
         autoHideDuration={2000}
-        onClose={handleSnackbarClose}
+        onClose={() => setSnackbar(null)}
       >
         <Alert
-          severity={sbProps.severity}
+          severity={snackbar?.severity || "info"}
           variant="filled"
           sx={{ width: "100%", borderRadius: "20px" }}
-          onClose={handleSnackbarClose}
+          onClose={() => setSnackbar(null)}
         >
-          {sbProps.message}
+          {snackbar?.message}
         </Alert>
       </Snackbar>
 
-      <ReceptionProgressModal open={openModal} onClose={() => setOpenModal(false)} />
+      <ReceptionProgressModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+      />
     </Box>
   );
 };

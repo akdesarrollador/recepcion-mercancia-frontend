@@ -55,17 +55,17 @@ const ItemsEnteredTable = () => {
         </TableHead>
         <TableBody>
           {productsReceived.map((row) => (
-            <StyledTableRow key={row.productCode}>
+            <StyledTableRow key={row.code}>
               <StyledTableCell component="th" scope="row">
-                {row.productCode}
+                {row.code}
               </StyledTableCell>
               <StyledTableCell align="center">
-                {row.productDescription}
+                {row.description}
               </StyledTableCell>
               <StyledTableCell align="center">
-                {row.productUnitsPerPackage && row.productUnitsPerPackage > 0
-                  ? row.productUnits * row.productUnitsPerPackage
-                  : row.productUnits}
+                {row.unitsPerPackage && row.unitsPerPackage > 0
+                  ? row.units * row.unitsPerPackage
+                  : row.units}
               </StyledTableCell>
               <StyledTableCell align="center">
                 <IconButton>
@@ -81,7 +81,7 @@ const ItemsEnteredTable = () => {
               open={openModal}
                 label="¿Desea eliminar este producto?"
                 onAccept={() => {
-                  deleteProductReceived(row.productCode);
+                  deleteProductReceived(row.code);
                   setOpenModal(false);
                 }}
                 onClose={() => setOpenModal(false)}
