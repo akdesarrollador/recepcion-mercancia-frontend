@@ -23,18 +23,21 @@ const LoginPage = () => {
   const [showFullScreenModal, setShowFullScreenModal] = useFullScreenModal();
   const textFieldRef = useInputFocus();
   const navigate = useNavigate();
-  const { onLogin, isLoggedIn } = useAuthStore()
-  const { openSnackbar } = useGlobalStore()
+  const { onLogin, isLoggedIn } = useAuthStore();
+  const { openSnackbar } = useGlobalStore();
 
-  if(isLoggedIn) navigate("/");
+  if (isLoggedIn) navigate("/");
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const response = await onLogin(password)
-      openSnackbar(response.message, (response.codigo === 200 ? 'success' : 'error'))
+      const response = await onLogin(password);
+      openSnackbar(
+        response.message,
+        response.codigo === 200 ? "success" : "error"
+      );
       navigate("/");
-    }  finally {
+    } finally {
       setPassword("");
       setIsLoading(false);
     }
