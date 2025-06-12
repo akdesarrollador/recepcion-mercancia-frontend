@@ -5,11 +5,12 @@ export interface SnackbarState {
   open: boolean;
   message: string;
   severity: string;
+  autoHide?: boolean;
 }
 
 export default interface GlobalStoreInterface {
   snackbar: SnackbarState;
-  openSnackbar: (message: string, severity: string) => void;
+  openSnackbar: (message: string, severity: string, autoHide?: boolean) => void;
   closeSnackbar: () => void;
   purchaseOrderData: null | PurchaseOrderData;
   setPurchaseOrderData: (data: PurchaseOrderData | null) => void;
@@ -23,4 +24,3 @@ export default interface GlobalStoreInterface {
   receptionId: number | null;
   setReceptionId: (id: number | null) => void;
 }
-

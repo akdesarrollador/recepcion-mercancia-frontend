@@ -28,6 +28,7 @@ export const useReceptionSubmission = ({
       const result = await createReception({
         numeroOrden: purchaseOrderData?.ordenCompra?.numeroOrden ?? "",
         proveedor: purchaseOrderData?.ordenCompra?.proveedor?.nombre ?? "",
+        sucursal: tienda || "",
       });
 
       if (result.status === 201) {
@@ -37,9 +38,8 @@ export const useReceptionSubmission = ({
               product.code,
               product.description,
               product.units_odc,
-              product.unitsPerPackage > 0
-                ? product.unitsPerPackage * product.units
-                : product.units,
+              product.units,
+              product.unitsPerPackage || 0,
               result.data.recepcion
             )
           ),
@@ -55,7 +55,11 @@ export const useReceptionSubmission = ({
 
         resetStore();
         navigate("/");
-        openSnackbar("Recepción finalizada correctamente", "success");
+        openSnackbar(
+          `Recepcion finalizada exitosamente. Su número de control es: ${result.data.confirmacion}`,
+          "success",
+          true
+        );
         onSuccess?.();
       } else {
         throw new Error("Falló la creación");

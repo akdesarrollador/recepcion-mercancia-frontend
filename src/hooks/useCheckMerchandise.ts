@@ -108,12 +108,12 @@ export const useCheckMerchandise = () => {
       setLoading(false);
     },
     [
-      receivedProduct,
+      purchaseOrderData?.productos,
       productAmount,
-      unitsPerPackage,
       productsReceived,
-      purchaseOrderData,
       addProductReceived,
+      receivedProduct,
+      unitsPerPackage,
       cleanFields,
     ]
   );

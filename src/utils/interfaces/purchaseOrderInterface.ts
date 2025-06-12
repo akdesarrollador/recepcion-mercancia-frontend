@@ -23,7 +23,8 @@ export interface Proveedor {
 export interface Producto {
   codigo: string;
   descripcion: string;
+  recibido: number;
+  unidades_por_bulto: number;
   solicitado_odc: number;
   solicitado_tienda: number;
-  recibido: number;
 }
