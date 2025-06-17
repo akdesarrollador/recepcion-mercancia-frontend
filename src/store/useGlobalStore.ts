@@ -36,12 +36,12 @@ const useGlobalStore = create<GlobalStoreInterface>()(
       },
       resetStore: () =>
         set({
-          billImages: null,
+          billImage: null,
           purchaseOrderData: null,
           productsReceived: [],
         }),
-      billImages: null,
-      setBillImage: (image: File[] | null) => set({ billImages: image }),
+      billImage: null,
+      setBillImage: (image: File | null) => set({ billImage: image }),
       receptionId: null,
       setReceptionId: (id: number | null) => set({ receptionId: id }),
     }),
@@ -50,7 +50,7 @@ const useGlobalStore = create<GlobalStoreInterface>()(
       partialize: (state) => ({
         purchaseOrderData: state.purchaseOrderData,
         productsReceived: state.productsReceived,
-        billImages: state.billImages,
+        billImages: state.billImage,
         receptionId: state.receptionId,
       }),
     }

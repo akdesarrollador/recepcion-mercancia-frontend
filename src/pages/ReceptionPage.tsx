@@ -26,7 +26,7 @@ const ReceptionPage = () => {
   const {
     purchaseOrderData,
     productsReceived,
-    billImages,
+    billImage,
     resetStore,
     openSnackbar,
   } = useGlobalStore();
@@ -34,7 +34,7 @@ const ReceptionPage = () => {
   const { loading, finishReception } = useReceptionSubmission({
     purchaseOrderData,
     productsReceived,
-    billImages,
+    billImage,
     resetStore,
     openSnackbar,
     navigate,
@@ -53,7 +53,6 @@ const ReceptionPage = () => {
   const isNextDisabled =
     purchaseOrderData === null ||
     (activeStep === 1 && productsReceived.length === 0) ||
-    (activeStep === 2 && !billImages?.length) ||
     purchaseOrderData?.productos?.length === 0;
 
   return (

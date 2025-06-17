@@ -7,7 +7,8 @@ export const createBillImage = async (
   numeroOrden: string
 ) => {
   const formData = new FormData();
-  formData.append("comprobantes", imagen);
+
+  formData.append("comprobante", imagen);
   formData.append("recepcion", recepcion.toString());
   formData.append("location", location);
   formData.append("numeroOrden", numeroOrden);

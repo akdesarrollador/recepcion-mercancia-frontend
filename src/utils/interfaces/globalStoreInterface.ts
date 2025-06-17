@@ -19,8 +19,8 @@ export default interface GlobalStoreInterface {
   cleanProductsReceived: () => void;
   deleteProductReceived: (productNumber: string) => void;
   resetStore: () => void;
-  billImages: File[] | null;
-  setBillImage: (image: File[] | null) => void;
+  billImage: File | null;
+  setBillImage: (image: File | null) => void;
   receptionId: number | null;
   setReceptionId: (id: number | null) => void;
 }

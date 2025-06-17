@@ -57,7 +57,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
     const newFiles = [...selectedFiles, ...files].slice(0, 3);
 
     setSelectedFiles(newFiles);
-    setBillImage(newFiles.length > 0 ? newFiles : null);
+    setBillImage(newFiles.length > 0 ? newFiles[0] : null);
     if (onSubmit) onSubmit(newFiles.length > 0 ? newFiles : null);
 
     event.target.value = "";
@@ -66,7 +66,7 @@ const AttachFile: React.FC<AttachFileProps> = ({
   const handleRemove = (idx: number) => {
     const newFiles = selectedFiles.filter((_, i) => i !== idx);
     setSelectedFiles(newFiles);
-    setBillImage(newFiles.length > 0 ? newFiles : null);
+    setBillImage(newFiles.length > 0 ? newFiles[0] : null);
     if (onSubmit) onSubmit(newFiles.length > 0 ? newFiles : null);
   };
 
@@ -136,7 +136,6 @@ const AttachFile: React.FC<AttachFileProps> = ({
                 </Box>
               ))}
             </FilePreview>
-            
           </PreviewBox>
         ) : (
           <>{text}</>
@@ -148,11 +147,10 @@ const AttachFile: React.FC<AttachFileProps> = ({
         accept="image/*"
         multiple
         onChange={handleChange}
-        disabled={selectedFiles.length >= 3}
-        max={3}
-        maxLength={3}
+        disabled={selectedFiles.length >= 1}
+        max={1}
+        maxLength={1}
       />
-
     </>
   );
 };

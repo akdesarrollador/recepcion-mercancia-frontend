@@ -9,7 +9,7 @@ import { useAuthStore } from "../store/useAuthStore";
 export const useReceptionSubmission = ({
   purchaseOrderData,
   productsReceived,
-  billImages,
+  billImage,
   resetStore,
   openSnackbar,
   navigate,
@@ -23,7 +23,7 @@ export const useReceptionSubmission = ({
   ) => {
     setLoading(true);
     try {
-      if (!billImages?.length) throw new Error("No hay imágenes");
+      if (!billImage) throw new Error("No hay imágenes");
 
       const result = await createReception({
         numeroOrden: purchaseOrderData?.ordenCompra?.numeroOrden ?? "",
@@ -43,13 +43,11 @@ export const useReceptionSubmission = ({
               result.data.recepcion
             )
           ),
-          ...billImages.map((img: File) =>
-            createBillImage(
-              img,
-              result.data.recepcion,
-              tienda || "",
-              purchaseOrderData?.ordenCompra?.numeroOrden ?? ""
-            )
+          createBillImage(
+            billImage,
+            result.data.recepcion,
+            tienda || "",
+            purchaseOrderData?.ordenCompra?.numeroOrden ?? ""
           ),
         ]);
 
