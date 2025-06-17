@@ -9,7 +9,7 @@ import { useState } from "react";
 import { LockKeyhole } from "lucide-react";
 import SimpleButton from "../components/buttons/simpleButton";
 import theme from "../theme/theme";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import FullScreenModal from "../components/modals/fullScreenModal";
 import useFullScreenModal from "../hooks/useFullScreenModal";
 import useInputFocus from "../hooks/useInputFocus";
@@ -26,7 +26,7 @@ const LoginPage = () => {
   const { onLogin, isLoggedIn } = useAuthStore();
   const { openSnackbar } = useGlobalStore();
 
-  if (isLoggedIn) navigate("/");
+  if (isLoggedIn) return <Navigate to="/" />;
 
   const handleSubmit = async () => {
     setIsLoading(true);

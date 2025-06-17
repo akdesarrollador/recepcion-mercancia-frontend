@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import ak_logo from "../../images/ak-logo.png";
@@ -25,7 +25,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({
   const { clean, isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
 
-  if (!isLoggedIn) navigate("/iniciar-sesion");
+  if (!isLoggedIn) return <Navigate to="/iniciar-sesion" />;
 
   const handleLogout = () => {
     resetStore();
