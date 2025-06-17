@@ -29,6 +29,8 @@ export const useReceptionSubmission = ({
         numeroOrden: purchaseOrderData?.ordenCompra?.numeroOrden ?? "",
         proveedor: purchaseOrderData?.ordenCompra?.proveedor?.nombre ?? "",
         sucursal: tienda || "",
+        codigoProveedor:
+          purchaseOrderData?.ordenCompra?.proveedor?.codigo ?? "",
       });
 
       if (result.status === 201) {
