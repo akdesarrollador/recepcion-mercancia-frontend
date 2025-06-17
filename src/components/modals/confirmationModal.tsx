@@ -3,11 +3,14 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import Typography from "@mui/material/Typography";
 import theme from "../../theme/theme";
+import Backdrop from "@mui/material/Backdrop";
+import SpinnerLoader from "../loader/spinnerLoader";
 
 interface ConfirmationModalProps {
   open: boolean;
   onClose: () => void;
   onAccept?: () => void;
+  loading?: boolean;
   label: string;
   colorAcceptButton?: string;
   textAcceptButton?: string;
@@ -19,6 +22,7 @@ const ConfirmationModal = ({
   open,
   onClose,
   onAccept,
+  loading,
   label,
   colorAcceptButton,
   textAcceptButton,
@@ -45,6 +49,12 @@ const ConfirmationModal = ({
         },
       }}
     >
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading || false}
+      >
+        <SpinnerLoader />
+      </Backdrop>
       {/* Aquí puedes agregar el contenido del modal de confirmación */}
       <Typography
         noWrap

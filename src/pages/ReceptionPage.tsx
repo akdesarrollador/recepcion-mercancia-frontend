@@ -83,6 +83,7 @@ const ReceptionPage = () => {
         label="¿Está seguro de finalizar la recepción?"
         textCancelButton="Cancelar"
         textAcceptButton="Finalizar"
+        loading={loading}
       />
     </Box>
   );
