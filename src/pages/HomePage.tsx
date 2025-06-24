@@ -19,14 +19,23 @@ import FullScreenModal from "../components/modals/fullScreenModal";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { setPurchaseOrderData, cleanProductsReceived, setJointReception } =
-    useGlobalStore();
+  const {
+    setPurchaseOrderData,
+    cleanProductsReceived,
+    setJointReception,
+    clearMultiplePurchaseOrderData,
+  } = useGlobalStore();
   const [showFullScreenModal, setShowFullScreenModal] = useFullScreenModal();
 
   useEffect(() => {
     setPurchaseOrderData(null);
     cleanProductsReceived();
-  }, [setPurchaseOrderData, cleanProductsReceived]);
+    clearMultiplePurchaseOrderData();
+  }, [
+    setPurchaseOrderData,
+    cleanProductsReceived,
+    clearMultiplePurchaseOrderData,
+  ]);
 
   return (
     <Box sx={sxFatherBox}>

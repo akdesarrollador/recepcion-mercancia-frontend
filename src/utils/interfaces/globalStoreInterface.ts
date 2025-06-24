@@ -1,4 +1,9 @@
-import { PurchaseOrderData } from "./purchaseOrderInterface";
+import {
+  PurchaseOrderData,
+  MultiplePurchaseOrdersData,
+  PurchaseOrderInterface,
+  Producto,
+} from "./purchaseOrderInterface";
 import { ProductReceivedInterface } from "./productReceivedInterface";
 
 export interface SnackbarState {
@@ -14,6 +19,12 @@ export default interface GlobalStoreInterface {
   closeSnackbar: () => void;
   purchaseOrderData: null | PurchaseOrderData;
   setPurchaseOrderData: (data: PurchaseOrderData | null) => void;
+  multiplePurchaseOrderData: null | MultiplePurchaseOrdersData;
+  addPurchaseOrderData: (
+    purchaseOrder: PurchaseOrderInterface,
+    productos: Producto[]
+  ) => void;
+  removePurchaseOrderData: (numeroOrden: string) => void;
   productsReceived: Array<ProductReceivedInterface>;
   addProductReceived: (product: ProductReceivedInterface) => void;
   cleanProductsReceived: () => void;
@@ -23,4 +34,5 @@ export default interface GlobalStoreInterface {
   setBillImage: (image: File | null) => void;
   jointReception: boolean;
   setJointReception: (joint: boolean) => void;
+  clearMultiplePurchaseOrderData: () => void;
 }

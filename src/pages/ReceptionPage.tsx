@@ -29,6 +29,8 @@ const ReceptionPage = () => {
     billImage,
     resetStore,
     openSnackbar,
+    jointReception,
+    multiplePurchaseOrderData,
   } = useGlobalStore();
 
   const { loading, finishReception } = useReceptionSubmission({
@@ -51,9 +53,13 @@ const ReceptionPage = () => {
   };
 
   const isNextDisabled =
-    purchaseOrderData === null ||
+    (!jointReception
+      ? purchaseOrderData === null
+      : multiplePurchaseOrderData === null) ||
     (activeStep === 1 && productsReceived.length === 0) ||
-    purchaseOrderData?.productos?.length === 0;
+    (!jointReception
+      ? purchaseOrderData?.productos?.length === 0
+      : multiplePurchaseOrderData?.productos?.length === 0);
 
   return (
     <Box sx={sxFatherBox}>

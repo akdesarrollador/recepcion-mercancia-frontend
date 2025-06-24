@@ -3,6 +3,11 @@ export interface PurchaseOrderData {
   productos: Producto[];
 }
 
+export interface MultiplePurchaseOrdersData {
+  ordenesCompra: PurchaseOrderInterface[];
+  productos: Producto[];
+}
+
 export interface PurchaseOrderInterface {
   id: number;
   numeroOrden: string;

@@ -15,13 +15,13 @@ import SpinnerLoader from "../loader/spinnerLoader";
 import useGlobalStore from "../../store/useGlobalStore";
 import useInputFocus from "../../hooks/useInputFocus";
 import { getPurchaseOrder } from "../../api/purchaseOrder";
-import Typography from "@mui/material/Typography";
+import OrdersArrayChips from "../chips/ordersArrayChips";
 
 const ScanMultipleOrder = () => {
   const [orderNumber, setOrderNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const iconButtonRef = useRef<HTMLButtonElement>(null);
-  const { setPurchaseOrderData, openSnackbar } = useGlobalStore();
+  const { openSnackbar, addPurchaseOrderData } = useGlobalStore();
   const textFieldRef = useInputFocus(); // Hook para manejar el foco del input
 
   const handleSubmit = React.useCallback(
@@ -34,30 +34,36 @@ const ScanMultipleOrder = () => {
       try {
         const response = await getPurchaseOrder(trimmedOrder);
         if (response?.status === 200) {
-          setPurchaseOrderData(response.data);
           if (response?.data?.productos?.length === 0) {
             openSnackbar(
               "La orden no tiene productos en esta sede.",
               "warning"
             );
+
+            return;
           }
+
+          addPurchaseOrderData(
+            response?.data?.ordenCompra,
+            response?.data?.productos
+          );
         } else {
           openSnackbar("No se encontró la orden de compra.", "error");
-          setPurchaseOrderData(null);
+          return;
         }
       } catch (error) {
         openSnackbar(
           "Error al buscar la orden de compra. Por favor, inténtalo de nuevo.",
           "error"
         );
-        setPurchaseOrderData(null);
         console.error("Error al buscar la orden de compra:", error);
+        return;
       } finally {
         setLoading(false);
         setOrderNumber("");
       }
     },
-    [orderNumber, setPurchaseOrderData, openSnackbar]
+    [orderNumber, openSnackbar, addPurchaseOrderData]
   );
 
   return (
@@ -74,12 +80,6 @@ const ScanMultipleOrder = () => {
       </Backdrop>
       {/* Icono de escaneo */}
       <FileScan color={theme.palette.primary.main} width={60} height={60} />
-      {/* Título de la página */}
-      <Typography
-        sx={{ fontSize: "24px", fontWeight: 600, marginBottom: "20px" }}
-      >
-        Escanear multiples Orden de Compra
-      </Typography>
       <Box sx={sxSecondaryBox}>
         <Box component="form" onSubmit={handleSubmit} sx={sxFormBox}>
           <SimpleTextInput
@@ -114,6 +114,9 @@ const ScanMultipleOrder = () => {
             <Search color={theme.palette.primary.main} width={20} height={20} />
           </IconButton>
         </Box>
+      </Box>
+      <Box sx={{ width: "100%", marginTop: "20px" }}>
+        <OrdersArrayChips />
       </Box>
     </Box>
   );

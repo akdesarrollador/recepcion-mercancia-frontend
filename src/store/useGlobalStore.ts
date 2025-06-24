@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { PurchaseOrderData } from "../utils/interfaces/purchaseOrderInterface";
+import {
+  Producto,
+  PurchaseOrderData,
+  PurchaseOrderInterface,
+} from "../utils/interfaces/purchaseOrderInterface";
 import GlobalStoreInterface from "../utils/interfaces/globalStoreInterface";
 import { ProductReceivedInterface } from "../utils/interfaces/productReceivedInterface";
 
@@ -39,20 +43,69 @@ const useGlobalStore = create<GlobalStoreInterface>()(
           billImage: null,
           purchaseOrderData: null,
           productsReceived: [],
+          multiplePurchaseOrderData: null,
           jointReception: false,
         }),
       billImage: null,
       setBillImage: (image: File | null) => set({ billImage: image }),
-      jointReception: false, // Default value, can be set later
+      jointReception: false,
       setJointReception: (joint: boolean) => set({ jointReception: joint }),
+      multiplePurchaseOrderData: null,
+      clearMultiplePurchaseOrderData: () =>
+        set({ multiplePurchaseOrderData: null }),
+      addPurchaseOrderData: (
+        purchaseOrder: PurchaseOrderInterface,
+        productos: Producto[]
+      ) =>
+        set({
+          multiplePurchaseOrderData: {
+            ordenesCompra: [
+              ...(get().multiplePurchaseOrderData?.ordenesCompra || []),
+              purchaseOrder,
+            ],
+            productos: [
+              ...(get().multiplePurchaseOrderData?.productos || []),
+              ...productos,
+            ],
+          },
+        }),
+      removePurchaseOrderData: (numeroOrden: string) => {
+        const currentData = get().multiplePurchaseOrderData;
+        if (!currentData) return;
+
+        // Encuentra el índice de la orden a eliminar
+        const orderIndex = currentData.ordenesCompra.findIndex(
+          (order) => order?.numeroOrden === numeroOrden
+        );
+        if (orderIndex === -1) return;
+
+        const start = currentData.ordenesCompra
+          .slice(0, orderIndex)
+          .reduce((acc, order) => acc + order.totalProductos, 0);
+
+        const count = currentData.ordenesCompra[orderIndex].totalProductos;
+
+        set({
+          multiplePurchaseOrderData: {
+            ordenesCompra: currentData.ordenesCompra.filter(
+              (order) => order.numeroOrden !== numeroOrden
+            ),
+            productos: [
+              ...currentData.productos.slice(0, start),
+              ...currentData.productos.slice(start + count),
+            ],
+          },
+        });
+      },
     }),
     {
       name: "global-storage-rdm",
       partialize: (state) => ({
         purchaseOrderData: state.purchaseOrderData,
         productsReceived: state.productsReceived,
-        billImages: state.billImage,
+        billImage: state.billImage,
         jointReception: state.jointReception,
+        multiplePurchaseOrderData: state.multiplePurchaseOrderData,
       }),
     }
   )
