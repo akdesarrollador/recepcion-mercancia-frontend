@@ -39,11 +39,12 @@ const useGlobalStore = create<GlobalStoreInterface>()(
           billImage: null,
           purchaseOrderData: null,
           productsReceived: [],
+          jointReception: false,
         }),
       billImage: null,
       setBillImage: (image: File | null) => set({ billImage: image }),
-      receptionId: null,
-      setReceptionId: (id: number | null) => set({ receptionId: id }),
+      jointReception: false, // Default value, can be set later
+      setJointReception: (joint: boolean) => set({ jointReception: joint }),
     }),
     {
       name: "global-storage-rdm",
@@ -51,7 +52,7 @@ const useGlobalStore = create<GlobalStoreInterface>()(
         purchaseOrderData: state.purchaseOrderData,
         productsReceived: state.productsReceived,
         billImages: state.billImage,
-        receptionId: state.receptionId,
+        jointReception: state.jointReception,
       }),
     }
   )

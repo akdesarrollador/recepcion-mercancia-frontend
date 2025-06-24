@@ -5,6 +5,7 @@ export interface SimpleButtonProps {
   onClick: () => void;
   disabled?: boolean;
   loading?: boolean;
+  borderColor?: string;
 }
 
 export interface PageButtonProps {

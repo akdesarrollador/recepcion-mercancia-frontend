@@ -21,6 +21,6 @@ export default interface GlobalStoreInterface {
   resetStore: () => void;
   billImage: File | null;
   setBillImage: (image: File | null) => void;
-  receptionId: number | null;
-  setReceptionId: (id: number | null) => void;
+  jointReception: boolean;
+  setJointReception: (joint: boolean) => void;
 }

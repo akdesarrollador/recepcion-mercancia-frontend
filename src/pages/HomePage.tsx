@@ -19,7 +19,8 @@ import FullScreenModal from "../components/modals/fullScreenModal";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { setPurchaseOrderData, cleanProductsReceived } = useGlobalStore();
+  const { setPurchaseOrderData, cleanProductsReceived, setJointReception } =
+    useGlobalStore();
   const [showFullScreenModal, setShowFullScreenModal] = useFullScreenModal();
 
   useEffect(() => {
@@ -70,8 +71,19 @@ const HomePage = () => {
       </Box>
       <SimpleButton
         backgroundColor={theme.palette.primary.main}
-        label="Iniciar Recepción"
+        label="Recepción Simple"
         onClick={() => {
+          setJointReception(false);
+          navigate("/recepcion");
+        }}
+      />
+      <SimpleButton
+        backgroundColor="FFFFFF"
+        borderColor={theme.palette.primary.main}
+        fontColor={theme.palette.primary.main}
+        label="Recepción Conjunta"
+        onClick={() => {
+          setJointReception(true);
           navigate("/recepcion");
         }}
       />
