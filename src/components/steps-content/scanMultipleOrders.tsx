@@ -21,7 +21,8 @@ const ScanMultipleOrder = () => {
   const [orderNumber, setOrderNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const iconButtonRef = useRef<HTMLButtonElement>(null);
-  const { openSnackbar, addPurchaseOrderData } = useGlobalStore();
+  const { openSnackbar, addPurchaseOrderData, multiplePurchaseOrderData } =
+    useGlobalStore();
   const textFieldRef = useInputFocus(); // Hook para manejar el foco del input
 
   const handleSubmit = React.useCallback(
@@ -40,6 +41,34 @@ const ScanMultipleOrder = () => {
               "warning"
             );
 
+            return;
+          }
+
+          if (
+            multiplePurchaseOrderData &&
+            multiplePurchaseOrderData.ordenesCompra &&
+            multiplePurchaseOrderData.ordenesCompra.length > 0 &&
+            !multiplePurchaseOrderData.ordenesCompra.every(
+              (orden) =>
+                orden?.proveedor?.codigo ===
+                response?.data?.ordenCompra.proveedor.codigo
+            )
+          ) {
+            openSnackbar(
+              "No se pueden recibir ordenes de proveedores diferentes.",
+              "error"
+            );
+
+            return;
+          }
+
+          if (
+            multiplePurchaseOrderData?.ordenesCompra.every(
+              (orden) =>
+                orden?.numeroOrden === response?.data?.ordenCompra.numeroOrden
+            )
+          ) {
+            openSnackbar("La orden de compra ya ha sido agregada.", "error");
             return;
           }
 
@@ -63,7 +92,7 @@ const ScanMultipleOrder = () => {
         setOrderNumber("");
       }
     },
-    [orderNumber, openSnackbar, addPurchaseOrderData]
+    [orderNumber, multiplePurchaseOrderData, addPurchaseOrderData, openSnackbar]
   );
 
   return (
