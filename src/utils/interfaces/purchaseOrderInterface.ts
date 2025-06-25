@@ -16,6 +16,7 @@ export interface PurchaseOrderInterface {
   diasVen: number;
   totalProductos: number;
   recibirEn: string;
+  __cantidadProductos?: number; // propiedad auxiliar para uso interno
 }
 
 export interface Proveedor {

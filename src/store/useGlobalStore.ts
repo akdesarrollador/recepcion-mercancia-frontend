@@ -61,7 +61,10 @@ const useGlobalStore = create<GlobalStoreInterface>()(
           multiplePurchaseOrderData: {
             ordenesCompra: [
               ...(get().multiplePurchaseOrderData?.ordenesCompra || []),
-              purchaseOrder,
+              {
+                ...purchaseOrder,
+                __cantidadProductos: productos.length, // propiedad auxiliar
+              },
             ],
             productos: [
               ...(get().multiplePurchaseOrderData?.productos || []),
@@ -71,6 +74,7 @@ const useGlobalStore = create<GlobalStoreInterface>()(
         }),
       removePurchaseOrderData: (numeroOrden: string) => {
         const currentData = get().multiplePurchaseOrderData;
+        // Si no hay datos, no hacer nada
         if (!currentData) return;
 
         // Encuentra el índice de la orden a eliminar
@@ -81,9 +85,10 @@ const useGlobalStore = create<GlobalStoreInterface>()(
 
         const start = currentData.ordenesCompra
           .slice(0, orderIndex)
-          .reduce((acc, order) => acc + order.totalProductos, 0);
+          .reduce((acc, order) => acc + (order.__cantidadProductos || 0), 0);
 
-        const count = currentData.ordenesCompra[orderIndex].totalProductos;
+        const count =
+          currentData.ordenesCompra[orderIndex].__cantidadProductos || 0;
 
         set({
           multiplePurchaseOrderData: {
