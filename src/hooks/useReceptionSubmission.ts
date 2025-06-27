@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { createReception } from "../api/reception";
-import { createReceivedProduct } from "../api/receivedProduct";
 import { createBillImage } from "../api/billsImage";
 import { useAuthStore } from "../store/useAuthStore";
+import useGlobalStore from "../store/useGlobalStore";
 
 // hooks/useReceptionSubmission.ts
 export const useReceptionSubmission = ({
@@ -16,6 +16,9 @@ export const useReceptionSubmission = ({
 }: any) => {
   const [loading, setLoading] = useState(false);
   const { tienda } = useAuthStore();
+  const { jointReception, multiplePurchaseOrderData, receptionTimer } =
+    useGlobalStore();
+  const [state, setState] = useState("Iniciando...");
 
   const finishReception = async (
     onSuccess?: () => void,
@@ -24,34 +27,52 @@ export const useReceptionSubmission = ({
     setLoading(true);
     try {
       if (!billImage) throw new Error("No hay imágenes");
+      const productos_recibidos = productsReceived.map((product: any) => ({
+        codigo: product.code,
+        descripcion: product.description,
+        unidades_odc: product.units_odc,
+        unidades: product.units,
+        unidades_por_bulto: product.unitsPerPackage || 0,
+      }));
+
+      let ordenes: string[];
+      let proveedor: string;
+
+      if (jointReception && multiplePurchaseOrderData) {
+        ordenes = multiplePurchaseOrderData.ordenesCompra.map(
+          (orden) => orden.numeroOrden
+        );
+        proveedor = multiplePurchaseOrderData.ordenesCompra[0].proveedor.nombre;
+      } else {
+        if (!purchaseOrderData?.ordenCompra?.numeroOrden) {
+          throw new Error("Número de orden de compra no disponible");
+        }
+        ordenes = [purchaseOrderData.ordenCompra.numeroOrden];
+        proveedor = purchaseOrderData.ordenCompra.proveedor?.nombre ?? "";
+      }
+
+      setState("Creando recepción...");
 
       const result = await createReception({
-        numeroOrden: purchaseOrderData?.ordenCompra?.numeroOrden ?? "",
-        proveedor: purchaseOrderData?.ordenCompra?.proveedor?.nombre ?? "",
-        sucursal: tienda || "",
-        codigoProveedor:
-          purchaseOrderData?.ordenCompra?.proveedor?.codigo ?? "",
+        ordenes,
+        proveedor,
+        codigoProveedor: !jointReception
+          ? purchaseOrderData?.ordenCompra?.proveedor?.codigo
+          : multiplePurchaseOrderData?.ordenesCompra[0]?.proveedor?.codigo,
+        productos_recibidos,
+        duracion: String(receptionTimer),
       });
 
+      setState("Subiendo imagen...");
       if (result.status === 201) {
-        await Promise.all([
-          ...productsReceived.map((product: any) =>
-            createReceivedProduct(
-              product.code,
-              product.description,
-              product.units_odc,
-              product.units,
-              product.unitsPerPackage || 0,
-              result.data.recepcion
-            )
-          ),
-          createBillImage(
-            billImage,
-            result.data.recepcion,
-            tienda || "",
-            purchaseOrderData?.ordenCompra?.numeroOrden ?? ""
-          ),
-        ]);
+        await createBillImage(
+          billImage,
+          result.data.recepcion,
+          tienda || "",
+          !jointReception
+            ? purchaseOrderData?.ordenCompra?.numeroOrden
+            : multiplePurchaseOrderData?.ordenesCompra[0]?.numeroOrden
+        );
 
         resetStore();
         navigate("/");
@@ -65,13 +86,18 @@ export const useReceptionSubmission = ({
         throw new Error("Falló la creación");
       }
     } catch (error) {
-      openSnackbar("Error al finalizar la recepción", "error");
-      console.error(error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al finalizar la recepción";
+
+      openSnackbar(errorMessage, "error");
+      console.error("Error en finishReception:", error);
       onError?.();
     } finally {
       setLoading(false);
     }
   };
 
-  return { loading, finishReception };
+  return { loading, finishReception, state };
 };

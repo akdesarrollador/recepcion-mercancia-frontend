@@ -28,6 +28,9 @@ const useGlobalStore = create<GlobalStoreInterface>()(
       setPurchaseOrderData: (data: PurchaseOrderData | null) =>
         set({ purchaseOrderData: data }),
       productsReceived: Array<ProductReceivedInterface>(),
+      setProductsReceived: (products: ProductReceivedInterface[]) =>
+        set({ productsReceived: products }),
+
       addProductReceived: (product: ProductReceivedInterface) =>
         set({ productsReceived: [...get().productsReceived, product] }),
       cleanProductsReceived: () => set({ productsReceived: [] }),
@@ -48,6 +51,8 @@ const useGlobalStore = create<GlobalStoreInterface>()(
         }),
       billImage: null,
       setBillImage: (image: File | null) => set({ billImage: image }),
+      receptionTimer: 0,
+      setReceptionTimer: (time: number) => set({ receptionTimer: time }),
       jointReception: false,
       setJointReception: (joint: boolean) => set({ jointReception: joint }),
       multiplePurchaseOrderData: null,
@@ -102,6 +107,9 @@ const useGlobalStore = create<GlobalStoreInterface>()(
           },
         });
       },
+      receptionCreationState: "Iniciando...",
+      setReceptionCreationState: (state: string) =>
+        set({ receptionCreationState: state }),
     }),
     {
       name: "global-storage-rdm",
@@ -110,6 +118,7 @@ const useGlobalStore = create<GlobalStoreInterface>()(
         productsReceived: state.productsReceived,
         billImage: state.billImage,
         jointReception: state.jointReception,
+        receptionCreationState: state.receptionCreationState,
         multiplePurchaseOrderData: state.multiplePurchaseOrderData,
       }),
     }

@@ -16,6 +16,7 @@ interface ConfirmationModalProps {
   textAcceptButton?: string;
   colorCancelButton?: string;
   textCancelButton?: string;
+  loaderText?: string;
 }
 
 const ConfirmationModal = ({
@@ -28,6 +29,7 @@ const ConfirmationModal = ({
   textAcceptButton,
   colorCancelButton,
   textCancelButton,
+  loaderText,
 }: ConfirmationModalProps) => {
   return (
     <Dialog
@@ -53,7 +55,7 @@ const ConfirmationModal = ({
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading || false}
       >
-        <SpinnerLoader />
+        <SpinnerLoader text={loaderText} />
       </Backdrop>
       {/* Aquí puedes agregar el contenido del modal de confirmación */}
       <Typography

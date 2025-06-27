@@ -7,8 +7,13 @@ import useGlobalStore from "../store/useGlobalStore";
 const DEFAULT_UNIT: Option = { value: "Unidades", label: "U" };
 
 export const useCheckMerchandise = () => {
-  const { purchaseOrderData, addProductReceived, productsReceived } =
-    useGlobalStore();
+  const {
+    purchaseOrderData,
+    addProductReceived,
+    productsReceived,
+    jointReception,
+    multiplePurchaseOrderData,
+  } = useGlobalStore();
 
   const [receivedProduct, setReceivedProduct] = useState("");
   const [productAmount, setProductAmount] = useState("");
@@ -51,27 +56,36 @@ export const useCheckMerchandise = () => {
       e?.preventDefault();
       setLoading(true);
 
-      const matched = purchaseOrderData?.productos.find(
-        (item: Producto) => item.codigo === receivedProduct.trim()
-      );
+      let matched = null;
+      matched = jointReception
+        ? multiplePurchaseOrderData?.productos.find(
+            (item: Producto) => item.codigo === receivedProduct.trim()
+          )
+        : purchaseOrderData?.productos.find(
+            (item: Producto) => item.codigo === receivedProduct.trim()
+          );
 
       if (!matched) {
-        setSnackbar({
-          severity: "error",
-          message: "El producto no está en la orden.",
-        });
-        cleanFields();
-        setLoading(false);
-        return;
+        //enviar el producto al backend para que se valide si existe pero con otro codigo
+
+        // si el backend dice que si existe, seteamos matched a true
+        // otro if para chequear si matcheo, en el caso negativo, mostramos el snackbar de error
+        if (!matched) {
+          setSnackbar({
+            severity: "error",
+            message: "El producto no está en la orden.",
+          });
+          cleanFields();
+          setLoading(false);
+          return;
+        }
       }
 
-      if (
-        matched.recibido + Number(productAmount) >
-        matched.solicitado_tienda
-      ) {
+      if (matched.recibido + Number(productAmount) > matched.total_solicitado) {
         setSnackbar({
-          severity: "error",
-          message: "Supera la cantidad solicitada",
+          severity: "warning",
+          message:
+            "La cantidad que estás recibiendo supera la cantidad solicitada.",
         });
         cleanFields();
         setLoading(false);
@@ -96,7 +110,7 @@ export const useCheckMerchandise = () => {
         code: receivedProduct,
         description: matched.descripcion,
         units: Number(productAmount),
-        units_odc: matched.solicitado_tienda,
+        units_odc: matched.total_solicitado,
         unitsPerPackage,
       });
 
@@ -108,6 +122,8 @@ export const useCheckMerchandise = () => {
       setLoading(false);
     },
     [
+      jointReception,
+      multiplePurchaseOrderData?.productos,
       purchaseOrderData?.productos,
       productAmount,
       productsReceived,

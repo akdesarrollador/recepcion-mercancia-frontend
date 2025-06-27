@@ -17,6 +17,7 @@ import useGlobalStore from "../../store/useGlobalStore";
 import OrderInfoBox from "../box/orderInfoBox";
 import useInputFocus from "../../hooks/useInputFocus";
 import { getPurchaseOrder } from "../../api/purchaseOrder";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const ScanOrder = () => {
   const [orderNumber, setOrderNumber] = useState("");
@@ -24,6 +25,7 @@ const ScanOrder = () => {
   const iconButtonRef = useRef<HTMLButtonElement>(null);
   const { purchaseOrderData, setPurchaseOrderData, openSnackbar } =
     useGlobalStore();
+  const { tienda } = useAuthStore(); // Obtiene la tienda actual del store
   const textFieldRef = useInputFocus(); // Hook para manejar el foco del input
 
   const handleSubmit = React.useCallback(
@@ -44,10 +46,7 @@ const ScanOrder = () => {
             );
           }
         } else {
-          openSnackbar(
-            "No se encontró la orden de compra.",
-            "error"
-          );
+          openSnackbar("No se encontró la orden de compra.", "error");
           setPurchaseOrderData(null);
         }
       } catch (error) {
@@ -122,7 +121,8 @@ const ScanOrder = () => {
           <>
             <OrderInfoBox
               label="Recibiendo en"
-              value={purchaseOrderData?.ordenCompra?.recibirEn}
+              value={tienda || ""}
+              // value={purchaseOrderData?.ordenCompra?.recibirEn}
             />
             <OrderInfoBox
               label="Orden de compra"

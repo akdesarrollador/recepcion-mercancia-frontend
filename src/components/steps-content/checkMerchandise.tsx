@@ -23,9 +23,16 @@ import ReceptionProgressModal from "../modals/receptionProgressModal";
 import SpinnerLoader from "../loader/spinnerLoader";
 import useGlobalStore from "../../store/useGlobalStore";
 import Typography from "@mui/material/Typography";
+import formatCounter from "../../utils/formatCounter";
 
 const CheckMerchandise: React.FC = () => {
-  const { purchaseOrderData, productsReceived } = useGlobalStore();
+  const {
+    purchaseOrderData,
+    productsReceived,
+    jointReception,
+    multiplePurchaseOrderData,
+    setReceptionTimer,
+  } = useGlobalStore();
   const [openModal, setOpenModal] = useState(false);
   const {
     receivedProduct,
@@ -43,6 +50,7 @@ const CheckMerchandise: React.FC = () => {
     setSnackbar,
     loading,
   } = useCheckMerchandise();
+  const [time, setTime] = useState(0);
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
@@ -60,6 +68,14 @@ const CheckMerchandise: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(time + 1);
+      setReceptionTimer(time + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [time, setReceptionTimer]);
+
   return (
     <Box sx={sxFatherBox}>
       <Backdrop
@@ -75,13 +91,24 @@ const CheckMerchandise: React.FC = () => {
           width={60}
           height={60}
         />
+        <Typography
+          sx={{
+            fontSize: "16px",
+            color: theme.palette.primary.main,
+            position: "absolute",
+            top: 140,
+            right: 50,
+          }}
+        >
+          {formatCounter(time)}
+        </Typography>
         <Box sx={sxOrderNumberAndButtonBox}>
           <SimpleTextInput
             readonly
             inputWidth="50%"
             inputHeight="35px"
             fontSize="12px"
-            value={purchaseOrderData?.ordenCompra.numeroOrden || ""}
+            value={purchaseOrderData?.ordenCompra.numeroOrden || "Multiorden"}
             setValue={() => {}}
             textAlign="center"
           />
@@ -119,11 +146,13 @@ const CheckMerchandise: React.FC = () => {
             noWrap
             sx={{ fontSize: "8px", textAlign: "left", ml: "5px" }}
           >
-            {
-              purchaseOrderData?.productos?.find(
-                (item) => item.codigo === receivedProduct.trim()
-              )?.descripcion
-            }
+            {jointReception
+              ? multiplePurchaseOrderData?.productos?.find(
+                  (item) => item.codigo === receivedProduct.trim()
+                )?.descripcion
+              : purchaseOrderData?.productos?.find(
+                  (item) => item.codigo === receivedProduct.trim()
+                )?.descripcion}
           </Typography>
         </Box>
 

@@ -1,10 +1,17 @@
 import { api } from "./axios";
 
 interface createReceptionParams {
-  numeroOrden: string;
+  ordenes: string[];
   proveedor: string;
-  sucursal: string;
   codigoProveedor: string;
+  productos_recibidos: {
+    codig0: string;
+    descripcion: string;
+    unidades_odc: number;
+    unidades: number;
+    unidades_por_bulto: number;
+  }[];
+  duracion: string;
 }
 
 export const createReception = async (data: createReceptionParams) => {

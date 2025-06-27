@@ -26,6 +26,7 @@ export default interface GlobalStoreInterface {
   ) => void;
   removePurchaseOrderData: (numeroOrden: string) => void;
   productsReceived: Array<ProductReceivedInterface>;
+  setProductsReceived: (products: ProductReceivedInterface[]) => void;
   addProductReceived: (product: ProductReceivedInterface) => void;
   cleanProductsReceived: () => void;
   deleteProductReceived: (productNumber: string) => void;
@@ -35,4 +36,8 @@ export default interface GlobalStoreInterface {
   jointReception: boolean;
   setJointReception: (joint: boolean) => void;
   clearMultiplePurchaseOrderData: () => void;
+  receptionCreationState: string;
+  setReceptionCreationState: (state: string) => void;
+  receptionTimer: number;
+  setReceptionTimer: (time: number) => void;
 }

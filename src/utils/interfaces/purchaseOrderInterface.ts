@@ -32,5 +32,5 @@ export interface Producto {
   recibido: number;
   unidades_por_bulto: number;
   solicitado_odc: number;
-  solicitado_tienda: number;
+  total_solicitado: number;
 }

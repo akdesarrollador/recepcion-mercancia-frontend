@@ -1,6 +1,10 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-const SpinnerLoader = () => {
+interface SpinnerLoaderProps {
+  text?: string;
+}
+
+const SpinnerLoader: React.FC<SpinnerLoaderProps> = ({ text }) => {
   return (
     <StyledWrapper>
       <div className="loader">
@@ -17,9 +21,10 @@ const SpinnerLoader = () => {
         <div className="bar11" />
         <div className="bar12" />
       </div>
+      {text && <p className="text">{text}</p>}
     </StyledWrapper>
   );
-}
+};
 
 const StyledWrapper = styled.div`
   .loader {
@@ -27,6 +32,15 @@ const StyledWrapper = styled.div`
     width: 54px;
     height: 54px;
     border-radius: 10px;
+  }
+
+  .text {
+    font-size: 14px;
+    color: #f1f1f1;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: 500;
+    font-family: "Roboto", sans-serif;
   }
 
   .loader div {
@@ -38,7 +52,7 @@ const StyledWrapper = styled.div`
     top: 30%;
     opacity: 0;
     border-radius: 50px;
-    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
     animation: fade458 1s linear infinite;
   }
 
@@ -110,6 +124,7 @@ const StyledWrapper = styled.div`
   .loader .bar12 {
     transform: rotate(330deg) translate(0, -130%);
     animation-delay: -0.1s;
-  }`;
+  }
+`;
 
 export default SpinnerLoader;

@@ -14,7 +14,22 @@ import {
 } from "../../styles/sxConfirmReception";
 
 const ConfirmReception = () => {
-  const { purchaseOrderData, productsReceived } = useGlobalStore();
+  const {
+    purchaseOrderData,
+    productsReceived,
+    jointReception,
+    multiplePurchaseOrderData,
+  } = useGlobalStore();
+  const circularValue = !jointReception
+    ? purchaseOrderData?.productos?.length &&
+      purchaseOrderData?.productos?.length > 0
+      ? (productsReceived.length / purchaseOrderData?.productos?.length) * 100
+      : 0
+    : multiplePurchaseOrderData?.productos?.length &&
+      multiplePurchaseOrderData?.productos?.length > 0
+    ? (productsReceived.length / multiplePurchaseOrderData?.productos?.length) *
+      100
+    : 0;
 
   return (
     <Box sx={sxFatherBox}>
@@ -23,15 +38,7 @@ const ConfirmReception = () => {
         {/* Contenedor del icono y el progreso */}
         <Box sx={sxIconAndProgressBox}>
           <ClipboardCheck color={theme.palette.primary.main} size={60} />
-          <CircularWithValueLabel
-            value={
-              purchaseOrderData?.productos?.length &&
-              purchaseOrderData?.productos?.length > 0
-                ? (productsReceived.length / purchaseOrderData?.productos?.length) *
-                  100
-                : 0
-            }
-          />
+          <CircularWithValueLabel value={circularValue} />
         </Box>
 
         {/* Contenedor del numero de orden */}
@@ -42,7 +49,7 @@ const ConfirmReception = () => {
             inputWidth="100%"
             inputHeight="35px"
             readonly
-            value={purchaseOrderData?.ordenCompra?.numeroOrden || ""}
+            value={purchaseOrderData?.ordenCompra?.numeroOrden || "Multiorden"}
             setValue={() => {}}
           />
         </Box>
@@ -60,8 +67,12 @@ const ConfirmReception = () => {
           Productos en la orden
           <SimpleTextInput
             value={
-              purchaseOrderData?.productos.length !== undefined
-                ? purchaseOrderData.productos.length.toString()
+              !jointReception
+                ? purchaseOrderData?.productos.length !== undefined
+                  ? purchaseOrderData.productos.length.toString()
+                  : ""
+                : multiplePurchaseOrderData?.productos?.length !== undefined
+                ? multiplePurchaseOrderData?.productos?.length?.toString()
                 : ""
             }
             setValue={() => {}}

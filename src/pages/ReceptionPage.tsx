@@ -31,9 +31,11 @@ const ReceptionPage = () => {
     openSnackbar,
     jointReception,
     multiplePurchaseOrderData,
+    setReceptionTimer,
+    cleanProductsReceived,
   } = useGlobalStore();
 
-  const { loading, finishReception } = useReceptionSubmission({
+  const { loading, finishReception, state } = useReceptionSubmission({
     purchaseOrderData,
     productsReceived,
     billImage,
@@ -48,8 +50,14 @@ const ReceptionPage = () => {
   };
 
   const handleBack = () => {
-    if (activeStep === 0) navigate("/");
-    else setActiveStep((prev) => prev - 1);
+    if (activeStep === 0) {
+      setReceptionTimer(0);
+      navigate("/");
+    } else if (activeStep === 1) {
+      setReceptionTimer(0);
+      setActiveStep((prev) => prev - 1);
+      cleanProductsReceived();
+    } else setActiveStep((prev) => prev - 1);
   };
 
   const isNextDisabled =
@@ -90,6 +98,7 @@ const ReceptionPage = () => {
         textCancelButton="Cancelar"
         textAcceptButton="Finalizar"
         loading={loading}
+        loaderText={state}
       />
     </Box>
   );
