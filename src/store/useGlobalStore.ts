@@ -82,6 +82,10 @@ const useGlobalStore = create<GlobalStoreInterface>()(
         // Si no hay datos, no hacer nada
         if (!currentData) return;
 
+        if (currentData.ordenesCompra.length === 1) {
+          return set({ multiplePurchaseOrderData: null });
+        }
+
         // Encuentra el índice de la orden a eliminar
         const orderIndex = currentData.ordenesCompra.findIndex(
           (order) => order?.numeroOrden === numeroOrden
