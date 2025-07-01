@@ -80,19 +80,9 @@ const HomePage = () => {
       </Box>
       <SimpleButton
         backgroundColor={theme.palette.primary.main}
-        label="Recepción Simple"
+        label="Iniciar Recepción"
         onClick={() => {
           setJointReception(false);
-          navigate("/recepcion");
-        }}
-      />
-      <SimpleButton
-        backgroundColor="FFFFFF"
-        borderColor={theme.palette.primary.main}
-        fontColor={theme.palette.primary.main}
-        label="Recepción Conjunta"
-        onClick={() => {
-          setJointReception(true);
           navigate("/recepcion");
         }}
       />

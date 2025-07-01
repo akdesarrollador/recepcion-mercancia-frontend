@@ -1,8 +1,7 @@
 import {
   PurchaseOrderData,
   MultiplePurchaseOrdersData,
-  PurchaseOrderInterface,
-  Producto,
+  PurchaseOrderDetectedType,
 } from "./purchaseOrderInterface";
 import { ProductReceivedInterface } from "./productReceivedInterface";
 
@@ -21,8 +20,7 @@ export default interface GlobalStoreInterface {
   setPurchaseOrderData: (data: PurchaseOrderData | null) => void;
   multiplePurchaseOrderData: null | MultiplePurchaseOrdersData;
   addPurchaseOrderData: (
-    purchaseOrder: PurchaseOrderInterface,
-    productos: Producto[]
+    purchaseOrderDetected: PurchaseOrderDetectedType
   ) => void;
   removePurchaseOrderData: (numeroOrden: string) => void;
   productsReceived: Array<ProductReceivedInterface>;

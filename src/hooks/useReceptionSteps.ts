@@ -1,8 +1,6 @@
 import ScanOrder from "../components/steps-content/scanOrder";
 import CheckMerchandise from "../components/steps-content/checkMerchandise";
 import ConfirmReception from "../components/steps-content/confirmReception";
-import ScanMultipleOrder from "../components/steps-content/scanMultipleOrders";
-import useGlobalStore from "../store/useGlobalStore";
 import React from "react";
 
 interface ReceptionStepsProps {
@@ -11,16 +9,10 @@ interface ReceptionStepsProps {
 }
 
 function useReceptionSteps(): ReceptionStepsProps[] {
-  const jointReception = useGlobalStore((state) => state.jointReception);
-
   return [
     {
-      label: !jointReception
-        ? "Escanear orden de compra"
-        : "Escanear órdenes de compra",
-      content: !jointReception
-        ? React.createElement(ScanOrder)
-        : React.createElement(ScanMultipleOrder),
+      label: "Escanear orden de compra",
+      content: React.createElement(ScanOrder),
     },
     {
       label: "Verificar mercancía",

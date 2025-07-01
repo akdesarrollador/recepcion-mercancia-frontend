@@ -24,6 +24,7 @@ import SpinnerLoader from "../loader/spinnerLoader";
 import useGlobalStore from "../../store/useGlobalStore";
 import Typography from "@mui/material/Typography";
 import formatCounter from "../../utils/formatCounter";
+import AddNewOrderModal from "../modals/addNewOrderModal";
 
 const CheckMerchandise: React.FC = () => {
   const {
@@ -34,6 +35,7 @@ const CheckMerchandise: React.FC = () => {
     setReceptionTimer,
   } = useGlobalStore();
   const [openModal, setOpenModal] = useState(false);
+  const [openNewOrderModal, setOpenNewOrderModal] = useState(false);
   const {
     receivedProduct,
     setReceivedProduct,
@@ -85,25 +87,27 @@ const CheckMerchandise: React.FC = () => {
         <SpinnerLoader />
       </Backdrop>
 
+      <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+        <Typography
+          sx={{
+            fontSize: "16px",
+            color: theme.palette.primary.main,
+          }}
+        >
+          {formatCounter(time)}
+        </Typography>
+      </Box>
+
       <Box sx={sxIconAndNumberBox}>
         <PackageOpen
           color={theme.palette.primary.main}
           width={60}
           height={60}
         />
-        <Typography
-          sx={{
-            fontSize: "16px",
-            color: theme.palette.primary.main,
-            position: "absolute",
-            top: 140,
-            right: 50,
-          }}
-        >
-          {formatCounter(time)}
-        </Typography>
         <Box sx={sxOrderNumberAndButtonBox}>
           <SimpleTextInput
+            onTripleClick={() => setOpenNewOrderModal(true)}
+            disableTextSelect={true}
             readonly
             inputWidth="50%"
             inputHeight="35px"
@@ -215,6 +219,12 @@ const CheckMerchandise: React.FC = () => {
       <ReceptionProgressModal
         open={openModal}
         onClose={() => setOpenModal(false)}
+      />
+
+      <AddNewOrderModal
+        open={openNewOrderModal}
+        onClose={() => setOpenNewOrderModal(false)}
+        label="Añadir nueva orden a la recepción"
       />
     </Box>
   );

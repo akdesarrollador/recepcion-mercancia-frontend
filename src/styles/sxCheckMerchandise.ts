@@ -5,7 +5,7 @@ export const sxFatherBox = {
   justifyContent: "center",
   width: "100%",
   height: "100%",
-  gap: "15px",
+  mb: 2,
 };
 
 export const sxIconAndNumberBox = {

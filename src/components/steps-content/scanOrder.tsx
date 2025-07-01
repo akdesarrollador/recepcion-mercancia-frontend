@@ -90,7 +90,7 @@ const ScanOrder = () => {
             inputWidth="100%"
             borderColor="DADADA"
             label="Orden de compra"
-            placeholder="ej. 0000567483904246"
+            placeholder="ej. 0000012345"
             value={orderNumber}
             setValue={setOrderNumber}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {

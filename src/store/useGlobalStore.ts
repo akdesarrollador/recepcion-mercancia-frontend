@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
   Producto,
   PurchaseOrderData,
-  PurchaseOrderInterface,
+  PurchaseOrderDetectedType,
+  // PurchaseOrderInterface,
 } from "../utils/interfaces/purchaseOrderInterface";
 import GlobalStoreInterface from "../utils/interfaces/globalStoreInterface";
 import { ProductReceivedInterface } from "../utils/interfaces/productReceivedInterface";
@@ -59,24 +61,168 @@ const useGlobalStore = create<GlobalStoreInterface>()(
       clearMultiplePurchaseOrderData: () =>
         set({ multiplePurchaseOrderData: null }),
       addPurchaseOrderData: (
-        purchaseOrder: PurchaseOrderInterface,
-        productos: Producto[]
-      ) =>
-        set({
-          multiplePurchaseOrderData: {
-            ordenesCompra: [
-              ...(get().multiplePurchaseOrderData?.ordenesCompra || []),
-              {
-                ...purchaseOrder,
-                __cantidadProductos: productos.length, // propiedad auxiliar
-              },
-            ],
-            productos: [
-              ...(get().multiplePurchaseOrderData?.productos || []),
-              ...productos,
-            ],
-          },
-        }),
+        purchaseOrderDetected: PurchaseOrderDetectedType
+      ) => {
+        if (!get().jointReception) {
+          console.log("recepcion conjunta en false");
+          get().setJointReception(true);
+          // Normalización de productos existentes (si es necesario)
+          const normalizedExistingProducts =
+            get().purchaseOrderData?.productos.map((product) => ({
+              codigo: product.codigo,
+              descripcion: product.descripcion,
+              recibido: product.recibido || 0,
+              unidades_por_bulto: product.unidades_por_bulto || 0,
+              solicitado_odc:
+                product.solicitado_odc || (product as any).cantidad || 0,
+              total_solicitado: product.total_solicitado || 0,
+            }));
+
+          // Paso 2: Normalizar los nuevos productos a la estructura Producto
+          const normalizedNewProducts = purchaseOrderDetected.productos.map(
+            (product) => ({
+              codigo: product.codigo,
+              descripcion: product.descripcion,
+              recibido: 0,
+              unidades_por_bulto: 0,
+              solicitado_odc: +product.cantidad,
+              total_solicitado: product.total_solicitado,
+            })
+          );
+
+          // Paso 3: Combinar todos los productos en un solo arreglo
+          const allProducts = [
+            ...(normalizedExistingProducts || []),
+            ...normalizedNewProducts,
+          ];
+
+          // Paso 4: Agrupar por código y sumar cantidades
+          const mergedProducts = allProducts.reduce((acc, current) => {
+            const existingProduct = acc.find(
+              (p) => p.codigo === current.codigo
+            );
+
+            if (existingProduct) {
+              // Sumar cantidades si el producto ya existe
+              existingProduct.solicitado_odc += current.solicitado_odc;
+              existingProduct.total_solicitado += current.total_solicitado;
+              // Mantener los valores de recibido y unidades_por_bulto del producto existente
+              existingProduct.recibido = Math.max(
+                existingProduct.recibido,
+                current.recibido
+              );
+              existingProduct.unidades_por_bulto = Math.max(
+                existingProduct.unidades_por_bulto,
+                current.unidades_por_bulto
+              );
+            } else {
+              // Agregar nuevo producto si no existe
+              acc.push({ ...current });
+            }
+            return acc;
+          }, [] as Producto[]);
+
+          const purchaseOrderData = get().purchaseOrderData;
+          const ordenCompra = purchaseOrderData?.ordenCompra;
+
+          set({
+            multiplePurchaseOrderData: {
+              ordenesCompra:
+                purchaseOrderData && ordenCompra ? [ordenCompra] : [],
+              productos: [
+                ...(get().multiplePurchaseOrderData?.productos || []),
+              ],
+            },
+          });
+
+          set({
+            multiplePurchaseOrderData: {
+              ordenesCompra: [
+                ...(get().multiplePurchaseOrderData?.ordenesCompra || []),
+                purchaseOrderDetected.ordenCompra,
+              ],
+              productos: mergedProducts,
+            },
+          });
+        } else {
+          console.log("recepcion conjunta en true");
+          // Normalización de productos existentes (si es necesario)
+          const normalizedExistingProducts =
+            get().multiplePurchaseOrderData?.productos.map((product) => ({
+              codigo: product.codigo,
+              descripcion: product.descripcion,
+              recibido: product.recibido || 0,
+              unidades_por_bulto: product.unidades_por_bulto || 0,
+              solicitado_odc:
+                product.solicitado_odc || (product as any).cantidad || 0,
+              total_solicitado: product.total_solicitado || 0,
+            }));
+
+          // Paso 2: Normalizar los nuevos productos a la estructura Producto
+          const normalizedNewProducts = purchaseOrderDetected.productos.map(
+            (product) => ({
+              codigo: product.codigo,
+              descripcion: product.descripcion,
+              recibido: 0,
+              unidades_por_bulto: 0,
+              solicitado_odc: +product.cantidad,
+              total_solicitado: product.total_solicitado,
+            })
+          );
+
+          // Paso 3: Combinar todos los productos en un solo arreglo
+          const allProducts = [
+            ...(normalizedExistingProducts || []),
+            ...normalizedNewProducts,
+          ];
+
+          // Paso 4: Agrupar por código y sumar cantidades
+          const mergedProducts = allProducts.reduce((acc, current) => {
+            const existingProduct = acc.find(
+              (p) => p.codigo === current.codigo
+            );
+
+            if (existingProduct) {
+              // Sumar cantidades si el producto ya existe
+              existingProduct.solicitado_odc += current.solicitado_odc;
+              existingProduct.total_solicitado += current.total_solicitado;
+              // Mantener los valores de recibido y unidades_por_bulto del producto existente
+              existingProduct.recibido = Math.max(
+                existingProduct.recibido,
+                current.recibido
+              );
+              existingProduct.unidades_por_bulto = Math.max(
+                existingProduct.unidades_por_bulto,
+                current.unidades_por_bulto
+              );
+            } else {
+              // Agregar nuevo producto si no existe
+              acc.push({ ...current });
+            }
+            return acc;
+          }, [] as Producto[]);
+
+          console.log(
+            "ordenes de compra en mpo antes de agregar nueva: ",
+            get().multiplePurchaseOrderData?.ordenesCompra
+          );
+
+          console.log(
+            "orden de compra por agregar: ",
+            purchaseOrderDetected.ordenCompra
+          );
+
+          set({
+            multiplePurchaseOrderData: {
+              ordenesCompra: [
+                ...(get().multiplePurchaseOrderData?.ordenesCompra || []),
+                purchaseOrderDetected.ordenCompra,
+              ],
+              productos: mergedProducts,
+            },
+          });
+        }
+      },
       removePurchaseOrderData: (numeroOrden: string) => {
         const currentData = get().multiplePurchaseOrderData;
         // Si no hay datos, no hacer nada

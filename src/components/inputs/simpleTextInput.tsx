@@ -24,9 +24,32 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
   inputRef,
   autoComplete = "off",
   autoFocus = false,
+  onTripleClick,
+  disableTextSelect = false,
 }) => {
   const internalRef = useRef<HTMLInputElement>(null);
   const showClearIcon = Boolean(value);
+
+  // Evento para triple click
+  const clickCountRef = useRef(0);
+  const lastClickTimeRef = useRef(0);
+
+  const handleTripleClick = () => {
+    const now = Date.now();
+    if (now - lastClickTimeRef.current < 600) {
+      clickCountRef.current += 1;
+    } else {
+      clickCountRef.current = 1;
+    }
+    lastClickTimeRef.current = now;
+
+    if (clickCountRef.current === 3) {
+      clickCountRef.current = 0;
+      if (onTripleClick) {
+        onTripleClick();
+      }
+    }
+  };
 
   // Usa el ref externo si lo pasan, si no, usa el interno
   const mergedRef = inputRef || internalRef;
@@ -41,6 +64,7 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
 
   return (
     <TextField
+      onClick={handleTripleClick}
       autoComplete={autoComplete}
       autoFocus={autoFocus}
       inputRef={mergedRef}
@@ -85,6 +109,10 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
           height: inputHeight,
           display: "flex",
           alignItems: "center",
+          userSelect: disableTextSelect ? "none" : undefined,
+          WebkitUserSelect: disableTextSelect ? "none" : undefined,
+          MozUserSelect: disableTextSelect ? "none" : undefined,
+          msUserSelect: disableTextSelect ? "none" : undefined,
         },
       }}
       sx={{
@@ -120,6 +148,10 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
           alignItems: "center",
           justifyContent: "center",
           textAlign: textAlign,
+          userSelect: disableTextSelect ? "none" : undefined,
+          WebkitUserSelect: disableTextSelect ? "none" : undefined,
+          MozUserSelect: disableTextSelect ? "none" : undefined,
+          msUserSelect: disableTextSelect ? "none" : undefined,
         },
         "& .MuiInputLabel-root": {
           fontSize: fontSize,

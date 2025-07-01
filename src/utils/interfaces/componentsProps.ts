@@ -53,6 +53,8 @@ export interface SimpleTextInputProps {
   inputRef?: React.RefObject<HTMLInputElement | null>;
   autoComplete?: "off" | "on";
   autoFocus?: boolean;
+  onTripleClick?: () => void;
+  disableTextSelect?: boolean;
 }
 
 export interface AddButtonProps {
@@ -113,4 +115,16 @@ export interface AttachFileProps {
   height?: string;
   fontSize?: string;
   padding?: string;
+}
+
+export interface AddNewOrderModalProps {
+  open: boolean;
+  onClose: () => void;
+  label: string;
+  loading?: boolean;
+  colorAcceptButton?: string;
+  textAcceptButton?: string;
+  colorCancelButton?: string;
+  textCancelButton?: string;
+  loaderText?: string;
 }
