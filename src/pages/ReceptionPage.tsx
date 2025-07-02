@@ -11,11 +11,13 @@ import FullScreenModal from "../components/modals/fullScreenModal";
 import { useReceptionSubmission } from "../hooks/useReceptionSubmission";
 import ReceptionStepper from "../components/layout/ReceptionStepper";
 import { useAuthStore } from "../store/useAuthStore";
+import WarningModal from "../components/modals/warningModal";
 
 const ReceptionPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
+  const [openWarningModal, setOpenWarningModal] = useState(false);
   const maxSteps = 3;
   const { isLoggedIn } = useAuthStore();
 
@@ -54,11 +56,16 @@ const ReceptionPage = () => {
       setReceptionTimer(0);
       navigate("/");
     } else if (activeStep === 1) {
-      setReceptionTimer(0);
-      setActiveStep((prev) => prev - 1);
-      cleanProductsReceived();
+      setOpenWarningModal(true);
     } else setActiveStep((prev) => prev - 1);
   };
+
+  const handleAcceptWarning = () => {
+    setReceptionTimer(0);
+    setActiveStep((prev) => prev - 1);
+    cleanProductsReceived();
+    setOpenWarningModal(false)
+  }
 
   const isNextDisabled =
     (!jointReception
@@ -78,7 +85,7 @@ const ReceptionPage = () => {
         <SpinnerLoader />
       </Backdrop>
 
-      <FullScreenModal open={false} onClose={() => {}} />
+      <FullScreenModal open={false} onClose={() => { }} />
 
       <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
         <ReceptionStepper
@@ -99,6 +106,16 @@ const ReceptionPage = () => {
         textAcceptButton="Finalizar"
         loading={loading}
         loaderText={state}
+      />
+
+      <WarningModal
+        open={openWarningModal}
+        onClose={() => setOpenWarningModal(false)}
+        onAccept={handleAcceptWarning}
+        colorAcceptButton="#FFBC11"
+        textAcceptButton="Aceptar"
+        colorCancelButton="#B4B4B4"
+        label="Al retroceder en este paso se perderá cualquier progreso que lleves con la recepción y deberás volver a escanear los productos."
       />
     </Box>
   );

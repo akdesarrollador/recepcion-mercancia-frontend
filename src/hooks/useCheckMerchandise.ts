@@ -38,6 +38,10 @@ export const useCheckMerchandise = () => {
     [receivedProduct, productAmount, currentUnit.label, unitsPerPackage]
   );
 
+  const isReceiveProductDisabled = useMemo(() => {
+return productsReceived.length === (jointReception ? multiplePurchaseOrderData?.productos.length : purchaseOrderData?.productos.length);
+  }, [productsReceived.length, jointReception, multiplePurchaseOrderData?.productos.length, purchaseOrderData?.productos.length]);
+
   const cleanFields = useCallback(() => {
     setReceivedProduct("");
     setProductAmount("");
@@ -81,9 +85,9 @@ export const useCheckMerchandise = () => {
         }
       }
 
-      if (matched.recibido + Number(productAmount) > matched.total_solicitado) {
+      if (matched.recibido + Number(productAmount) > matched.solicitado_odc) {
         setSnackbar({
-          severity: "warning",
+          severity: "error",
           message:
             "La cantidad que estás recibiendo supera la cantidad solicitada.",
         });
@@ -110,7 +114,7 @@ export const useCheckMerchandise = () => {
         code: receivedProduct,
         description: matched.descripcion,
         units: Number(productAmount),
-        units_odc: matched.total_solicitado,
+        units_odc: matched.solicitado_odc,
         unitsPerPackage,
       });
 
@@ -149,5 +153,6 @@ export const useCheckMerchandise = () => {
     snackbar,
     setSnackbar,
     loading,
+    isReceiveProductDisabled,
   };
 };

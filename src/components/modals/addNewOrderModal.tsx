@@ -144,7 +144,7 @@ const AddNewOrderModal = ({
       setPurchaseOrderData(null);
 
       openSnackbar(
-        `Recepción conjunta activada. Orden de compra ${purchaseOrderDetected.ordenCompra.numeroOrden} añadida a la recepción.`,
+        `Orden de compra ${purchaseOrderDetected.ordenCompra.numeroOrden} añadida a la recepción.`,
         "success"
       );
     } else {

@@ -7,6 +7,7 @@ import { sxInputBase, sxMenuItem, sxPaper, sxPaperPropsMenu, sxUnitSelectorBox }
 const defaultOptions: Option[] = [
   { value: "Unidades", label: "U" },
   { value: "Bultos", label: "B" },
+  { value: "Kilogramos", label: "Kg" },
 ];
 
 const InputWithSelector: React.FC<InputWithSelectorProps> = ({
@@ -117,7 +118,7 @@ const InputWithSelector: React.FC<InputWithSelectorProps> = ({
           horizontal: "left",
         }}
         PaperProps={{
-          sx: {sxPaperPropsMenu},
+          sx: { sxPaperPropsMenu },
         }}
       >
         {options.map((option) => (

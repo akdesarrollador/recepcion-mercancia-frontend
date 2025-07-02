@@ -64,7 +64,6 @@ const useGlobalStore = create<GlobalStoreInterface>()(
         purchaseOrderDetected: PurchaseOrderDetectedType
       ) => {
         if (!get().jointReception) {
-          console.log("recepcion conjunta en false");
           get().setJointReception(true);
           // Normalización de productos existentes (si es necesario)
           const normalizedExistingProducts =
@@ -145,7 +144,6 @@ const useGlobalStore = create<GlobalStoreInterface>()(
             },
           });
         } else {
-          console.log("recepcion conjunta en true");
           // Normalización de productos existentes (si es necesario)
           const normalizedExistingProducts =
             get().multiplePurchaseOrderData?.productos.map((product) => ({
@@ -201,16 +199,6 @@ const useGlobalStore = create<GlobalStoreInterface>()(
             }
             return acc;
           }, [] as Producto[]);
-
-          console.log(
-            "ordenes de compra en mpo antes de agregar nueva: ",
-            get().multiplePurchaseOrderData?.ordenesCompra
-          );
-
-          console.log(
-            "orden de compra por agregar: ",
-            purchaseOrderDetected.ordenCompra
-          );
 
           set({
             multiplePurchaseOrderData: {

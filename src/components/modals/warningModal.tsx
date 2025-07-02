@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import theme from "../../theme/theme";
 import Backdrop from "@mui/material/Backdrop";
 import SpinnerLoader from "../loader/spinnerLoader";
+import { TriangleAlert } from 'lucide-react';
 
 interface WarningModalProps {
   open: boolean;
@@ -37,13 +38,14 @@ const WarningModal = ({
       onClose={onClose}
       PaperProps={{
         sx: {
-          width: "90%",
-          height: "15%",
-          maxWidth: "90%",
-          maxHeight: "15%",
+          width: "60%",
+          height: "20%",
+          maxWidth: "80%",
+          maxHeight: "20%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          justifyContent: "center",
+          gap: 2,
           backgroundColor: "#FFFFFF",
           boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.3)",
           borderRadius: "20px",
@@ -57,20 +59,32 @@ const WarningModal = ({
       >
         <SpinnerLoader text={loaderText} />
       </Backdrop>
-      {/* Aquí puedes agregar el contenido del modal de confirmación */}
-      <Typography
-        noWrap
+
+      <Box
         sx={{
-          color: "#000000",
-          fontWeight: "bold",
-          fontSize: "14px",
-          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        {label}
-      </Typography>
+        <TriangleAlert width={42} height={42} color="#FFBC11" />
+        {/* Aquí puedes agregar el contenido del modal de confirmación */}
+        <Typography
+          sx={{
+            color: "#898989",
+            fontWeight: "bold",
+            fontSize: "10px",
+            textAlign: "justify",
+            lineHeight: "14px",
+            width: "90%",
+            marginTop: "12px",
+          }}
+        >
+          {label}
+        </Typography>
+      </Box>
       {/* Agrega más contenido según sea necesario */}
-      <Box sx={{ mt: 2, gap: 1.5, display: "flex", flexDirection: "row" }}>
+      <Box sx={{ gap: 1.5, display: "flex", flexDirection: "row" }}>
         <Button
           onClick={onClose}
           sx={{

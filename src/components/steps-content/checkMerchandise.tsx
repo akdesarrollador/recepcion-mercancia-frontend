@@ -29,7 +29,6 @@ import AddNewOrderModal from "../modals/addNewOrderModal";
 const CheckMerchandise: React.FC = () => {
   const {
     purchaseOrderData,
-    productsReceived,
     jointReception,
     multiplePurchaseOrderData,
     setReceptionTimer,
@@ -51,6 +50,7 @@ const CheckMerchandise: React.FC = () => {
     snackbar,
     setSnackbar,
     loading,
+    isReceiveProductDisabled
   } = useCheckMerchandise();
   const [time, setTime] = useState(0);
 
@@ -113,7 +113,7 @@ const CheckMerchandise: React.FC = () => {
             inputHeight="35px"
             fontSize="12px"
             value={purchaseOrderData?.ordenCompra.numeroOrden || "Multiorden"}
-            setValue={() => {}}
+            setValue={() => { }}
             textAlign="center"
           />
           <Button
@@ -132,6 +132,7 @@ const CheckMerchandise: React.FC = () => {
       <Box component="form" onSubmit={handleSubmit} sx={sxFormBox}>
         <Box sx={sxFormFirstRowBox}>
           <SimpleTextInput
+            disabled={isReceiveProductDisabled}
             autoComplete="off"
             autoFocus
             inputHeight="45px"
@@ -142,9 +143,6 @@ const CheckMerchandise: React.FC = () => {
             value={receivedProduct}
             setValue={setReceivedProduct}
             fontSize="12px"
-            disabled={
-              productsReceived.length === purchaseOrderData?.productos?.length
-            }
           />
           <Typography
             noWrap
@@ -152,24 +150,22 @@ const CheckMerchandise: React.FC = () => {
           >
             {jointReception
               ? multiplePurchaseOrderData?.productos?.find(
-                  (item) => item.codigo === receivedProduct.trim()
-                )?.descripcion
+                (item) => item.codigo === receivedProduct.trim()
+              )?.descripcion
               : purchaseOrderData?.productos?.find(
-                  (item) => item.codigo === receivedProduct.trim()
-                )?.descripcion}
+                (item) => item.codigo === receivedProduct.trim()
+              )?.descripcion}
           </Typography>
         </Box>
 
         <Box sx={sxFormSecondRowBox}>
           <InputWithSelector
+            disabled={isReceiveProductDisabled}
             textValue={productAmount}
             onTextChange={setProductAmount}
             selectedUnit={currentUnit}
             onUnitChange={setCurrentUnit}
             placeholder="Cantidad"
-            disabled={
-              productsReceived.length === purchaseOrderData?.productos?.length
-            }
           />
           <SimpleTextInput
             disabled={currentUnit.label !== "B" || receivedProduct === ""}
