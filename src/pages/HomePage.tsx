@@ -20,21 +20,18 @@ import FullScreenModal from "../components/modals/fullScreenModal";
 const HomePage = () => {
   const navigate = useNavigate();
   const {
-    setPurchaseOrderData,
-    cleanProductsReceived,
+    limpiarProductosRecibidos,
     setJointReception,
-    clearMultiplePurchaseOrderData,
+    limpiarOrdenesCompraData,
   } = useGlobalStore();
   const [showFullScreenModal, setShowFullScreenModal] = useFullScreenModal();
 
   useEffect(() => {
-    setPurchaseOrderData(null);
-    cleanProductsReceived();
-    clearMultiplePurchaseOrderData();
+    limpiarProductosRecibidos();
+    limpiarOrdenesCompraData();
   }, [
-    setPurchaseOrderData,
-    cleanProductsReceived,
-    clearMultiplePurchaseOrderData,
+    limpiarProductosRecibidos,
+    limpiarOrdenesCompraData,
   ]);
 
   return (

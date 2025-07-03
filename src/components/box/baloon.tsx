@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import theme from "../../theme/theme";
 import { IconButton } from "@mui/material";
-import { BaloonProps } from "../../utils/interfaces/componentsProps";
+import { BaloonProps } from "../../utils/interfaces/component.props";
 
 const Baloon = ({ side, imgSrc, icon }: BaloonProps) => {
   return (

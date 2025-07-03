@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import { SimpleButtonProps } from "../../utils/interfaces/componentsProps";
+import { SimpleButtonProps } from "../../utils/interfaces/component.props";
 
 const SimpleButton: React.FC<SimpleButtonProps> = ({
   backgroundColor = "#0054A6",

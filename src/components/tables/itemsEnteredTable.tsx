@@ -36,7 +36,7 @@ const StyledTableRow = styled(TableRow)(() => ({
 }));
 
 const ItemsEnteredTable = () => {
-  const { productsReceived, deleteProductReceived } = useGlobalStore();
+  const { productosRecibidos, eliminarProductoRecibido } = useGlobalStore();
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -54,18 +54,18 @@ const ItemsEnteredTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {productsReceived.map((row) => (
-            <StyledTableRow key={row.code}>
+          {productosRecibidos.map((row) => (
+            <StyledTableRow key={row.codigo}>
               <StyledTableCell component="th" scope="row">
-                {row.code}
+                {row.codigo}
               </StyledTableCell>
               <StyledTableCell align="center">
-                {row.description}
+                {row.descripcion}
               </StyledTableCell>
               <StyledTableCell align="center">
-                {row.unitsPerPackage && row.unitsPerPackage > 0
-                  ? row.units * row.unitsPerPackage
-                  : row.units}
+                {row.unidades_por_bulto && row.unidades_por_bulto > 0
+                  ? row.unidades * row.unidades_por_bulto
+                  : row.unidades}
               </StyledTableCell>
               <StyledTableCell align="center">
                 <IconButton>
@@ -78,10 +78,10 @@ const ItemsEnteredTable = () => {
               </StyledTableCell>
 
               <ConfirmationModal
-              open={openModal}
+                open={openModal}
                 label="¿Desea eliminar este producto?"
                 onAccept={() => {
-                  deleteProductReceived(row.code);
+                  eliminarProductoRecibido(row.codigo);
                   setOpenModal(false);
                 }}
                 onClose={() => setOpenModal(false)}

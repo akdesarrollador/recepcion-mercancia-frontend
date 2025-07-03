@@ -19,8 +19,8 @@ import { getPurchaseOrder } from "../../api/purchaseOrder";
 import useGlobalStore from "../../store/useGlobalStore";
 import OrderInfoBox from "../box/orderInfoBox";
 import { useAuthStore } from "../../store/useAuthStore";
-import { AddNewOrderModalProps } from "../../utils/interfaces/componentsProps";
-import { PurchaseOrderDetectedType } from "../../utils/interfaces/purchaseOrderInterface";
+import { AddNewOrderModalProps } from "../../utils/interfaces/component.props";
+import { OrdenCompraDetectadaInterface } from "../../utils/interfaces/ordenes-compra.interfaces";
 
 const AddNewOrderModal = ({
   open,
@@ -37,18 +37,14 @@ const AddNewOrderModal = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const [purchaseOrderDetected, setPurchaseOrderDetected] =
-    useState<PurchaseOrderDetectedType | null>(null);
+    useState<OrdenCompraDetectadaInterface | null>(null);
 
   const iconButtonRef = useRef<HTMLButtonElement>(null);
   const textFieldRef = useInputFocus();
   const {
     openSnackbar,
-    purchaseOrderData,
-    setPurchaseOrderData,
-    jointReception,
-    // setJointReception,
-    addPurchaseOrderData,
-    multiplePurchaseOrderData,
+    ordenesCompraData,
+    addOrdenCompra
   } = useGlobalStore();
   const { tienda } = useAuthStore();
 
@@ -61,6 +57,12 @@ const AddNewOrderModal = ({
       setIsLoading(true);
       try {
         const response = await getPurchaseOrder(trimmedOrder);
+
+        if (response?.status === 404) {
+          openSnackbar("Orden de compra no encontrada.", "error");
+          return setPurchaseOrderDetected(null);
+        }
+
         if (response?.status === 200) {
           if (response?.data?.productos?.length === 0) {
             openSnackbar(
@@ -72,7 +74,7 @@ const AddNewOrderModal = ({
 
           if (
             response?.data?.ordenCompra?.numeroOrden ===
-            purchaseOrderData?.ordenCompra?.numeroOrden
+            ordenesCompraData?.ordenes_compra[0]?.numero_orden
           ) {
             openSnackbar(
               "La orden de compra ingresada corresponde con la orden en curso.",
@@ -83,9 +85,7 @@ const AddNewOrderModal = ({
 
           if (
             response?.data?.ordenCompra?.proveedor?.codigo !==
-            (!jointReception
-              ? purchaseOrderData?.ordenCompra?.proveedor?.codigo
-              : multiplePurchaseOrderData?.ordenesCompra[0]?.proveedor?.codigo)
+            (ordenesCompraData?.ordenes_compra[0]?.proveedor?.codigo)
           ) {
             openSnackbar(
               "La orden de compra ingresada corresponde a un proveedor diferente.",
@@ -100,10 +100,6 @@ const AddNewOrderModal = ({
           setPurchaseOrderDetected(null);
         }
       } catch (error) {
-        openSnackbar(
-          "Error al buscar la orden de compra. Por favor, inténtalo de nuevo.",
-          "error"
-        );
         setPurchaseOrderDetected(null);
         console.error("Error al buscar la orden de compra:", error);
       } finally {
@@ -111,14 +107,7 @@ const AddNewOrderModal = ({
         setOrderNumber("");
       }
     },
-    [
-      orderNumber,
-      purchaseOrderData?.ordenCompra?.numeroOrden,
-      purchaseOrderData?.ordenCompra?.proveedor?.codigo,
-      jointReception,
-      multiplePurchaseOrderData?.ordenesCompra,
-      openSnackbar,
-    ]
+    [orderNumber, ordenesCompraData?.ordenes_compra, openSnackbar]
   );
 
   const handleClose = () => {
@@ -136,25 +125,12 @@ const AddNewOrderModal = ({
       );
     }
 
-    //TODO: EL ERROR ESTA AQUI PORQUE ESTO EN LA PRIMERA PASADA NO ES NULL PERO YA LUEGO SI
-    if (!jointReception && purchaseOrderData) {
-      // setJointReception(true);
+    addOrdenCompra(purchaseOrderDetected);
+    openSnackbar(
+      `Orden de compra ${purchaseOrderDetected.ordenCompra.numeroOrden} añadida a la recepción.`,
+      "success"
+    );
 
-      addPurchaseOrderData(purchaseOrderDetected);
-      setPurchaseOrderData(null);
-
-      openSnackbar(
-        `Orden de compra ${purchaseOrderDetected.ordenCompra.numeroOrden} añadida a la recepción.`,
-        "success"
-      );
-    } else {
-      // Si ya está en modo de recepción conjunta, simplemente añadimos la orden
-      addPurchaseOrderData(purchaseOrderDetected);
-      openSnackbar(
-        `Orden de compra ${purchaseOrderDetected.ordenCompra.numeroOrden} añadida a la recepción.`,
-        "success"
-      );
-    }
     handleClose();
   };
 

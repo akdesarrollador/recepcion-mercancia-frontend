@@ -28,9 +28,7 @@ import AddNewOrderModal from "../modals/addNewOrderModal";
 
 const CheckMerchandise: React.FC = () => {
   const {
-    purchaseOrderData,
-    jointReception,
-    multiplePurchaseOrderData,
+    ordenesCompraData,
     setReceptionTimer,
   } = useGlobalStore();
   const [openModal, setOpenModal] = useState(false);
@@ -112,7 +110,12 @@ const CheckMerchandise: React.FC = () => {
             inputWidth="50%"
             inputHeight="35px"
             fontSize="12px"
-            value={purchaseOrderData?.ordenCompra.numeroOrden || "Multiorden"}
+            value={
+              ordenesCompraData?.ordenes_compra?.length
+                && ordenesCompraData?.ordenes_compra?.length === 1 ?
+                ordenesCompraData?.ordenes_compra[0]?.numero_orden :
+                `${ordenesCompraData?.ordenes_compra?.[0]?.numero_orden}, (${(ordenesCompraData?.ordenes_compra?.length ?? 0) - 1} más)`
+            }
             setValue={() => { }}
             textAlign="center"
           />
@@ -148,13 +151,9 @@ const CheckMerchandise: React.FC = () => {
             noWrap
             sx={{ fontSize: "8px", textAlign: "left", ml: "5px" }}
           >
-            {jointReception
-              ? multiplePurchaseOrderData?.productos?.find(
-                (item) => item.codigo === receivedProduct.trim()
-              )?.descripcion
-              : purchaseOrderData?.productos?.find(
-                (item) => item.codigo === receivedProduct.trim()
-              )?.descripcion}
+            {ordenesCompraData?.productos?.find(
+              (item) => item.codigo === receivedProduct.trim()
+            )?.descripcion}
           </Typography>
         </Box>
 

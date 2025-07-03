@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { SimpleFieldProps } from "../../utils/interfaces/componentsProps";
+import { SimpleFieldProps } from "../../utils/interfaces/component.props";
 import SimpleTextInput from "../inputs/simpleTextInput";
 import Typography from "@mui/material/Typography";
 

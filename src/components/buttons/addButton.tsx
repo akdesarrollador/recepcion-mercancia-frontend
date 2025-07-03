@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { CirclePlus } from "lucide-react";
-import { AddButtonProps } from "../../utils/interfaces/componentsProps";
+import { AddButtonProps } from "../../utils/interfaces/component.props";
 
 const AddButton: React.FC<AddButtonProps> = ({
   width = "15%",

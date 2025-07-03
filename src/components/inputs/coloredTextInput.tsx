@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { Eye } from 'lucide-react';
 import { useState } from "react";
 import { EyeOff } from 'lucide-react';
-import { ColoredTextInputProps } from "../../utils/interfaces/componentsProps";
+import { ColoredTextInputProps } from "../../utils/interfaces/component.props";
 
 const ColoredTextInput: React.FC<ColoredTextInputProps> = ({
     borderColor = "#1976d2",

@@ -5,7 +5,7 @@ interface createReceptionParams {
   proveedor: string;
   codigoProveedor: string;
   productos_recibidos: {
-    codig0: string;
+    codigo: string;
     descripcion: string;
     unidades_odc: number;
     unidades: number;

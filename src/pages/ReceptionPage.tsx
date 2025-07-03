@@ -26,20 +26,18 @@ const ReceptionPage = () => {
   }, [isLoggedIn]);
 
   const {
-    purchaseOrderData,
-    productsReceived,
+    productosRecibidos,
+    ordenesCompraData,
     billImage,
     resetStore,
     openSnackbar,
-    jointReception,
-    multiplePurchaseOrderData,
     setReceptionTimer,
-    cleanProductsReceived,
+    limpiarProductosRecibidos,
   } = useGlobalStore();
 
   const { loading, finishReception, state } = useReceptionSubmission({
-    purchaseOrderData,
-    productsReceived,
+    ordenesCompraData,
+    productosRecibidos,
     billImage,
     resetStore,
     openSnackbar,
@@ -63,18 +61,14 @@ const ReceptionPage = () => {
   const handleAcceptWarning = () => {
     setReceptionTimer(0);
     setActiveStep((prev) => prev - 1);
-    cleanProductsReceived();
+    limpiarProductosRecibidos();
     setOpenWarningModal(false)
   }
 
   const isNextDisabled =
-    (!jointReception
-      ? purchaseOrderData === null
-      : multiplePurchaseOrderData === null) ||
-    (activeStep === 1 && productsReceived.length === 0) ||
-    (!jointReception
-      ? purchaseOrderData?.productos?.length === 0
-      : multiplePurchaseOrderData?.productos?.length === 0);
+    (activeStep === 1 && productosRecibidos.length === 0)
+    || (activeStep === 2 && !billImage)
+    || (!ordenesCompraData);
 
   return (
     <Box sx={sxFatherBox}>

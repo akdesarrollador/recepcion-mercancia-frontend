@@ -1,14 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
-  Producto,
-  PurchaseOrderData,
-  PurchaseOrderDetectedType,
-  // PurchaseOrderInterface,
-} from "../utils/interfaces/purchaseOrderInterface";
-import GlobalStoreInterface from "../utils/interfaces/globalStoreInterface";
-import { ProductReceivedInterface } from "../utils/interfaces/productReceivedInterface";
+import { OrdenCompraDetectadaInterface } from "../utils/interfaces/ordenes-compra.interfaces";
+import GlobalStoreInterface from "../utils/interfaces/global-store.interfaces";
+import Producto, { ProductoRecibidoInterface } from "../utils/interfaces/productos.interfaces";
 
 const useGlobalStore = create<GlobalStoreInterface>()(
   persist(
@@ -26,218 +20,68 @@ const useGlobalStore = create<GlobalStoreInterface>()(
           snackbar: { open: false, message: "", severity: "" },
         });
       },
-      purchaseOrderData: null,
-      setPurchaseOrderData: (data: PurchaseOrderData | null) =>
-        set({ purchaseOrderData: data }),
-      productsReceived: Array<ProductReceivedInterface>(),
-      setProductsReceived: (products: ProductReceivedInterface[]) =>
-        set({ productsReceived: products }),
+      ordenesCompraData: null,
+      addOrdenCompra: (ordenCompraDetectada: OrdenCompraDetectadaInterface) => {
+        const products = get().ordenesCompraData?.productos || [];
+        const normalizedNewProducts = ordenCompraDetectada.productos.map((product) => ({
+          codigo: product.codigo,
+          descripcion: product.descripcion,
+          ya_recibido: product?.ya_recibido || 0,
+          cantidad_asignada: product.cantidad_asignada || 0,
+          unidades_por_bulto: product.unidades_por_bulto || 0,
+        }));
 
-      addProductReceived: (product: ProductReceivedInterface) =>
-        set({ productsReceived: [...get().productsReceived, product] }),
-      cleanProductsReceived: () => set({ productsReceived: [] }),
-      deleteProductReceived: (code: string) => {
+        const allProducts = [ ...products, ...normalizedNewProducts ];
+
+        const mergedProducts = allProducts.reduce((acc, current) => {
+          const existingProduct = acc.find((p) => p.codigo === current.codigo);
+
+          if(existingProduct) {
+            existingProduct.cantidad_asignada += current.cantidad_asignada;
+            existingProduct.ya_recibido = Math.max(existingProduct.ya_recibido, current.ya_recibido);
+            existingProduct.unidades_por_bulto =Math.max(existingProduct.unidades_por_bulto, current.unidades_por_bulto);
+          } else {
+            acc.push({ ...current });
+          }
+          return acc;
+        }, [] as Producto[]);
+
         set({
-          productsReceived: get().productsReceived.filter(
-            (product) => product.code !== code
-          ),
+          ordenesCompraData: {
+            ordenes_compra: [
+              ...get().ordenesCompraData?.ordenes_compra || [],
+              {
+                ...ordenCompraDetectada.ordenCompra,
+                numero_orden: ordenCompraDetectada.ordenCompra.numeroOrden,
+                fecha_pedido: ordenCompraDetectada.ordenCompra.fechaPedido,
+                dias_ven: ordenCompraDetectada.ordenCompra.diasVen,
+                recibir_en: ordenCompraDetectada.ordenCompra.recibirEn,
+              }
+            ],
+            productos: mergedProducts,
+          }
         });
       },
-      resetStore: () =>
-        set({
-          billImage: null,
-          purchaseOrderData: null,
-          productsReceived: [],
-          multiplePurchaseOrderData: null,
-          jointReception: false,
-        }),
-      billImage: null,
-      setBillImage: (image: File | null) => set({ billImage: image }),
-      receptionTimer: 0,
-      setReceptionTimer: (time: number) => set({ receptionTimer: time }),
-      jointReception: false,
-      setJointReception: (joint: boolean) => set({ jointReception: joint }),
-      multiplePurchaseOrderData: null,
-      clearMultiplePurchaseOrderData: () =>
-        set({ multiplePurchaseOrderData: null }),
-      addPurchaseOrderData: (
-        purchaseOrderDetected: PurchaseOrderDetectedType
-      ) => {
-        if (!get().jointReception) {
-          get().setJointReception(true);
-          // Normalización de productos existentes (si es necesario)
-          const normalizedExistingProducts =
-            get().purchaseOrderData?.productos.map((product) => ({
-              codigo: product.codigo,
-              descripcion: product.descripcion,
-              recibido: product.recibido || 0,
-              unidades_por_bulto: product.unidades_por_bulto || 0,
-              solicitado_odc:
-                product.solicitado_odc || (product as any).cantidad || 0,
-              total_solicitado: product.total_solicitado || 0,
-            }));
-
-          // Paso 2: Normalizar los nuevos productos a la estructura Producto
-          const normalizedNewProducts = purchaseOrderDetected.productos.map(
-            (product) => ({
-              codigo: product.codigo,
-              descripcion: product.descripcion,
-              recibido: 0,
-              unidades_por_bulto: 0,
-              solicitado_odc: +product.cantidad,
-              total_solicitado: product.total_solicitado,
-            })
-          );
-
-          // Paso 3: Combinar todos los productos en un solo arreglo
-          const allProducts = [
-            ...(normalizedExistingProducts || []),
-            ...normalizedNewProducts,
-          ];
-
-          // Paso 4: Agrupar por código y sumar cantidades
-          const mergedProducts = allProducts.reduce((acc, current) => {
-            const existingProduct = acc.find(
-              (p) => p.codigo === current.codigo
-            );
-
-            if (existingProduct) {
-              // Sumar cantidades si el producto ya existe
-              existingProduct.solicitado_odc += current.solicitado_odc;
-              existingProduct.total_solicitado += current.total_solicitado;
-              // Mantener los valores de recibido y unidades_por_bulto del producto existente
-              existingProduct.recibido = Math.max(
-                existingProduct.recibido,
-                current.recibido
-              );
-              existingProduct.unidades_por_bulto = Math.max(
-                existingProduct.unidades_por_bulto,
-                current.unidades_por_bulto
-              );
-            } else {
-              // Agregar nuevo producto si no existe
-              acc.push({ ...current });
-            }
-            return acc;
-          }, [] as Producto[]);
-
-          const purchaseOrderData = get().purchaseOrderData;
-          const ordenCompra = purchaseOrderData?.ordenCompra;
-
-          set({
-            multiplePurchaseOrderData: {
-              ordenesCompra:
-                purchaseOrderData && ordenCompra ? [ordenCompra] : [],
-              productos: [
-                ...(get().multiplePurchaseOrderData?.productos || []),
-              ],
-            },
-          });
-
-          set({
-            multiplePurchaseOrderData: {
-              ordenesCompra: [
-                ...(get().multiplePurchaseOrderData?.ordenesCompra || []),
-                purchaseOrderDetected.ordenCompra,
-              ],
-              productos: mergedProducts,
-            },
-          });
-        } else {
-          // Normalización de productos existentes (si es necesario)
-          const normalizedExistingProducts =
-            get().multiplePurchaseOrderData?.productos.map((product) => ({
-              codigo: product.codigo,
-              descripcion: product.descripcion,
-              recibido: product.recibido || 0,
-              unidades_por_bulto: product.unidades_por_bulto || 0,
-              solicitado_odc:
-                product.solicitado_odc || (product as any).cantidad || 0,
-              total_solicitado: product.total_solicitado || 0,
-            }));
-
-          // Paso 2: Normalizar los nuevos productos a la estructura Producto
-          const normalizedNewProducts = purchaseOrderDetected.productos.map(
-            (product) => ({
-              codigo: product.codigo,
-              descripcion: product.descripcion,
-              recibido: 0,
-              unidades_por_bulto: 0,
-              solicitado_odc: +product.cantidad,
-              total_solicitado: product.total_solicitado,
-            })
-          );
-
-          // Paso 3: Combinar todos los productos en un solo arreglo
-          const allProducts = [
-            ...(normalizedExistingProducts || []),
-            ...normalizedNewProducts,
-          ];
-
-          // Paso 4: Agrupar por código y sumar cantidades
-          const mergedProducts = allProducts.reduce((acc, current) => {
-            const existingProduct = acc.find(
-              (p) => p.codigo === current.codigo
-            );
-
-            if (existingProduct) {
-              // Sumar cantidades si el producto ya existe
-              existingProduct.solicitado_odc += current.solicitado_odc;
-              existingProduct.total_solicitado += current.total_solicitado;
-              // Mantener los valores de recibido y unidades_por_bulto del producto existente
-              existingProduct.recibido = Math.max(
-                existingProduct.recibido,
-                current.recibido
-              );
-              existingProduct.unidades_por_bulto = Math.max(
-                existingProduct.unidades_por_bulto,
-                current.unidades_por_bulto
-              );
-            } else {
-              // Agregar nuevo producto si no existe
-              acc.push({ ...current });
-            }
-            return acc;
-          }, [] as Producto[]);
-
-          set({
-            multiplePurchaseOrderData: {
-              ordenesCompra: [
-                ...(get().multiplePurchaseOrderData?.ordenesCompra || []),
-                purchaseOrderDetected.ordenCompra,
-              ],
-              productos: mergedProducts,
-            },
-          });
-        }
-      },
-      removePurchaseOrderData: (numeroOrden: string) => {
-        const currentData = get().multiplePurchaseOrderData;
-        // Si no hay datos, no hacer nada
+      removerOrdenCompra: (numero_orden: string) => {
+        const currentData = get().ordenesCompraData;
         if (!currentData) return;
 
-        if (currentData.ordenesCompra.length === 1) {
-          return set({ multiplePurchaseOrderData: null });
+        if (currentData.ordenes_compra.length === 1) {
+          return set({ ordenesCompraData: null });
         }
 
-        // Encuentra el índice de la orden a eliminar
-        const orderIndex = currentData.ordenesCompra.findIndex(
-          (order) => order?.numeroOrden === numeroOrden
-        );
+        const orderIndex = currentData.ordenes_compra.findIndex((order) => order?.numero_orden === numero_orden);
         if (orderIndex === -1) return;
 
-        const start = currentData.ordenesCompra
+        const start = currentData.ordenes_compra
           .slice(0, orderIndex)
-          .reduce((acc, order) => acc + (order.__cantidadProductos || 0), 0);
+          .reduce((acc, order) => acc + (order.__cantidad_productos || 0), 0);
 
-        const count =
-          currentData.ordenesCompra[orderIndex].__cantidadProductos || 0;
+        const count = currentData.ordenes_compra[orderIndex].__cantidad_productos || 0;
 
         set({
-          multiplePurchaseOrderData: {
-            ordenesCompra: currentData.ordenesCompra.filter(
-              (order) => order.numeroOrden !== numeroOrden
-            ),
+          ordenesCompraData: {
+            ordenes_compra: currentData.ordenes_compra.filter((order) => order.numero_orden !== numero_orden),
             productos: [
               ...currentData.productos.slice(0, start),
               ...currentData.productos.slice(start + count),
@@ -245,19 +89,51 @@ const useGlobalStore = create<GlobalStoreInterface>()(
           },
         });
       },
+      limpiarOrdenesCompraData: () => set({ ordenesCompraData: null }),
+      productosRecibidos: Array<ProductoRecibidoInterface>(),
+      setProductosRecibidos: (productos: ProductoRecibidoInterface[]) => {
+        set({ productosRecibidos: productos });
+      },
+      addProductoRecibido: (producto: ProductoRecibidoInterface) => {
+        set({ productosRecibidos: [...get().productosRecibidos, producto] });
+      },
+      eliminarProductoRecibido: (codigo: string) => {
+        set({
+          productosRecibidos: get().productosRecibidos.filter((product) => product.codigo !== codigo),
+        });
+      },
+      limpiarProductosRecibidos: () => set({ productosRecibidos: [] }),
+      billImage: null,
+      setBillImage: (image: File | null) => set({ billImage: image }),
+      receptionTimer: 0,
+      setReceptionTimer: (time: number) => set({ receptionTimer: time }),
+      jointReception: false,
+      setJointReception: (joint: boolean) => set({ jointReception: joint }),
       receptionCreationState: "Iniciando...",
-      setReceptionCreationState: (state: string) =>
-        set({ receptionCreationState: state }),
+      setReceptionCreationState: (state: string) => set({ receptionCreationState: state }),
+      resetStore: () => set({
+        snackbar: {
+          open: false,
+          message: "",
+          severity: "",
+        },
+        ordenesCompraData: null,
+        productosRecibidos: [],
+        billImage: null,
+        jointReception: false,
+        receptionCreationState: "Iniciando...",
+        receptionTimer: 0,
+      }),
     }),
     {
       name: "global-storage-rdm",
       partialize: (state) => ({
-        purchaseOrderData: state.purchaseOrderData,
-        productsReceived: state.productsReceived,
+        ordenesCompraData: state.ordenesCompraData,
         billImage: state.billImage,
         jointReception: state.jointReception,
         receptionCreationState: state.receptionCreationState,
-        multiplePurchaseOrderData: state.multiplePurchaseOrderData,
+        receptionTimer: state.receptionTimer,
+        productosRecibidos: state.productosRecibidos,
       }),
     }
   )

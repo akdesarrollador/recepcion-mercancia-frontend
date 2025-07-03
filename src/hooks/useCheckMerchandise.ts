@@ -1,18 +1,16 @@
 // hooks/useCheckMerchandise.ts
 import { useState, useMemo, useCallback } from "react";
-import { Option, SnackBarProps } from "../utils/interfaces/componentsProps";
-import { Producto } from "../utils/interfaces/purchaseOrderInterface";
+import { Option, SnackBarProps } from "../utils/interfaces/component.props";
 import useGlobalStore from "../store/useGlobalStore";
+import Producto from "../utils/interfaces/productos.interfaces";
 
 const DEFAULT_UNIT: Option = { value: "Unidades", label: "U" };
 
 export const useCheckMerchandise = () => {
   const {
-    purchaseOrderData,
-    addProductReceived,
-    productsReceived,
-    jointReception,
-    multiplePurchaseOrderData,
+    ordenesCompraData,
+    addProductoRecibido,
+    productosRecibidos,
   } = useGlobalStore();
 
   const [receivedProduct, setReceivedProduct] = useState("");
@@ -39,8 +37,8 @@ export const useCheckMerchandise = () => {
   );
 
   const isReceiveProductDisabled = useMemo(() => {
-return productsReceived.length === (jointReception ? multiplePurchaseOrderData?.productos.length : purchaseOrderData?.productos.length);
-  }, [productsReceived.length, jointReception, multiplePurchaseOrderData?.productos.length, purchaseOrderData?.productos.length]);
+    return productosRecibidos.length === ordenesCompraData?.productos.length;
+  }, [productosRecibidos.length, ordenesCompraData?.productos.length]);
 
   const cleanFields = useCallback(() => {
     setReceivedProduct("");
@@ -61,13 +59,9 @@ return productsReceived.length === (jointReception ? multiplePurchaseOrderData?.
       setLoading(true);
 
       let matched = null;
-      matched = jointReception
-        ? multiplePurchaseOrderData?.productos.find(
-            (item: Producto) => item.codigo === receivedProduct.trim()
-          )
-        : purchaseOrderData?.productos.find(
-            (item: Producto) => item.codigo === receivedProduct.trim()
-          );
+      matched = ordenesCompraData?.productos.find(
+        (item: Producto) => item.codigo === receivedProduct.trim()
+      );
 
       if (!matched) {
         //enviar el producto al backend para que se valide si existe pero con otro codigo
@@ -85,7 +79,7 @@ return productsReceived.length === (jointReception ? multiplePurchaseOrderData?.
         }
       }
 
-      if (matched.recibido + Number(productAmount) > matched.solicitado_odc) {
+      if (matched.ya_recibido + Number(productAmount) > matched.cantidad_asignada) {
         setSnackbar({
           severity: "error",
           message:
@@ -96,8 +90,8 @@ return productsReceived.length === (jointReception ? multiplePurchaseOrderData?.
         return;
       }
 
-      const alreadyReceived = productsReceived.some(
-        (item) => item.code === receivedProduct.trim()
+      const alreadyReceived = productosRecibidos.some(
+        (item) => item.codigo === receivedProduct.trim()
       );
 
       if (alreadyReceived) {
@@ -110,12 +104,12 @@ return productsReceived.length === (jointReception ? multiplePurchaseOrderData?.
         return;
       }
 
-      addProductReceived({
-        code: receivedProduct,
-        description: matched.descripcion,
-        units: Number(productAmount),
-        units_odc: matched.solicitado_odc,
-        unitsPerPackage,
+      addProductoRecibido({
+        codigo: receivedProduct,
+        descripcion: matched.descripcion,
+        unidades: Number(productAmount),
+        cantidad_asignada: matched.cantidad_asignada,
+        unidades_por_bulto: matched.unidades_por_bulto,
       });
 
       setSnackbar({
@@ -125,17 +119,7 @@ return productsReceived.length === (jointReception ? multiplePurchaseOrderData?.
       cleanFields();
       setLoading(false);
     },
-    [
-      jointReception,
-      multiplePurchaseOrderData?.productos,
-      purchaseOrderData?.productos,
-      productAmount,
-      productsReceived,
-      addProductReceived,
-      receivedProduct,
-      unitsPerPackage,
-      cleanFields,
-    ]
+    [ordenesCompraData?.productos, productAmount, productosRecibidos, addProductoRecibido, receivedProduct, cleanFields]
   );
 
   return {

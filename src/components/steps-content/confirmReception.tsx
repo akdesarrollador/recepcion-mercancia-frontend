@@ -15,21 +15,14 @@ import {
 
 const ConfirmReception = () => {
   const {
-    purchaseOrderData,
-    productsReceived,
+    ordenesCompraData,
+    productosRecibidos,
     jointReception,
-    multiplePurchaseOrderData,
   } = useGlobalStore();
-  const circularValue = !jointReception
-    ? purchaseOrderData?.productos?.length &&
-      purchaseOrderData?.productos?.length > 0
-      ? (productsReceived.length / purchaseOrderData?.productos?.length) * 100
-      : 0
-    : multiplePurchaseOrderData?.productos?.length &&
-      multiplePurchaseOrderData?.productos?.length > 0
-    ? (productsReceived.length / multiplePurchaseOrderData?.productos?.length) *
-      100
-    : 0;
+  const circularValue = ordenesCompraData?.productos?.length &&
+    ordenesCompraData?.productos?.length > 0
+    ? (productosRecibidos.length / ordenesCompraData?.productos?.length) * 100
+    : 0
 
   return (
     <Box sx={sxFatherBox}>
@@ -49,8 +42,8 @@ const ConfirmReception = () => {
             inputWidth="100%"
             inputHeight="35px"
             readonly
-            value={purchaseOrderData?.ordenCompra?.numeroOrden || "Multiorden"}
-            setValue={() => {}}
+            value={!jointReception ? ordenesCompraData?.ordenes_compra[0]?.numero_orden : "Multiorden"}
+            setValue={() => { }}
           />
         </Box>
       </Box>
@@ -67,15 +60,11 @@ const ConfirmReception = () => {
           Productos en la orden
           <SimpleTextInput
             value={
-              !jointReception
-                ? purchaseOrderData?.productos.length !== undefined
-                  ? purchaseOrderData.productos.length.toString()
-                  : ""
-                : multiplePurchaseOrderData?.productos?.length !== undefined
-                ? multiplePurchaseOrderData?.productos?.length?.toString()
+              ordenesCompraData?.productos.length !== undefined
+                ? ordenesCompraData.productos.length.toString()
                 : ""
             }
-            setValue={() => {}}
+            setValue={() => { }}
             textAlign="center"
             fontSize="12px"
             inputWidth="58px"
@@ -90,11 +79,11 @@ const ConfirmReception = () => {
           Productos ingresados
           <SimpleTextInput
             value={
-              productsReceived.length !== undefined
-                ? productsReceived.length.toString()
+              productosRecibidos.length !== undefined
+                ? productosRecibidos.length.toString()
                 : ""
             }
-            setValue={() => {}}
+            setValue={() => { }}
             textAlign="center"
             fontSize="12px"
             inputWidth="58px"

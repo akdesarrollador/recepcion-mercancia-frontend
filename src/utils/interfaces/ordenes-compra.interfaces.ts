@@ -1,21 +1,18 @@
-export interface PurchaseOrderData {
-  ordenCompra: PurchaseOrderInterface;
+import Producto from "./productos.interfaces";
+
+export default interface OrdenesCompraInterface {
+  ordenes_compra: OrdenCompra[];
   productos: Producto[];
 }
 
-export interface MultiplePurchaseOrdersData {
-  ordenesCompra: PurchaseOrderInterface[];
-  productos: Producto[];
-}
-
-export interface PurchaseOrderInterface {
+export interface OrdenCompra {
   id: number;
-  numeroOrden: string;
+  numero_orden: string;
   proveedor: Proveedor;
-  fechaPedido: string;
-  diasVen: number;
-  recibirEn: string;
-  __cantidadProductos?: number; // propiedad auxiliar para uso interno
+  fecha_pedido: string;
+  dias_ven: number;
+  recibir_en: string;
+  __cantidad_productos?: number; // propiedad auxiliar para uso interno
 }
 
 export interface Proveedor {
@@ -25,16 +22,8 @@ export interface Proveedor {
   rif: string;
 }
 
-export interface Producto {
-  codigo: string;
-  descripcion: string;
-  recibido: number;
-  unidades_por_bulto: number;
-  solicitado_odc: number;
-  total_solicitado: number;
-}
 
-export interface PurchaseOrderDetectedType {
+export interface OrdenCompraDetectadaInterface {
   ordenCompra: {
     id: number;
     numeroOrden: string;
@@ -58,7 +47,9 @@ export interface PurchaseOrderDetectedType {
   productos: Array<{
     codigo: string;
     descripcion: string;
-    cantidad: number;
+    cantidad_asignada: number;
     total_solicitado: number;
+    ya_recibido?: number;
+    unidades_por_bulto?: number;
   }>;
 }

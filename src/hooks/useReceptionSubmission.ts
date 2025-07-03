@@ -4,11 +4,11 @@ import { createReception } from "../api/reception";
 import { createBillImage } from "../api/billsImage";
 import { useAuthStore } from "../store/useAuthStore";
 import useGlobalStore from "../store/useGlobalStore";
+import { ProductoRecibidoInterface } from "../utils/interfaces/productos.interfaces";
 
 // hooks/useReceptionSubmission.ts
 export const useReceptionSubmission = ({
   purchaseOrderData,
-  productsReceived,
   billImage,
   resetStore,
   openSnackbar,
@@ -16,8 +16,7 @@ export const useReceptionSubmission = ({
 }: any) => {
   const [loading, setLoading] = useState(false);
   const { tienda } = useAuthStore();
-  const { jointReception, multiplePurchaseOrderData, receptionTimer } =
-    useGlobalStore();
+  const { receptionTimer, ordenesCompraData, productosRecibidos } = useGlobalStore();
   const [state, setState] = useState("Iniciando...");
 
   const finishReception = async (
@@ -27,22 +26,23 @@ export const useReceptionSubmission = ({
     setLoading(true);
     try {
       if (!billImage) throw new Error("No hay imágenes");
-      const productos_recibidos = productsReceived.map((product: any) => ({
-        codigo: product.code,
-        descripcion: product.description,
-        unidades_odc: product.units_odc,
-        unidades: product.units,
-        unidades_por_bulto: product.unitsPerPackage || 0,
+
+      const productos_recibidos = productosRecibidos.map((product: ProductoRecibidoInterface) => ({
+        codigo: product.codigo,
+        descripcion: product.descripcion,
+        unidades_odc: product.cantidad_asignada,
+        unidades: product.unidades,
+        unidades_por_bulto: product.unidades_por_bulto || 0,
       }));
 
       let ordenes: string[];
       let proveedor: string;
 
-      if (jointReception && multiplePurchaseOrderData) {
-        ordenes = multiplePurchaseOrderData.ordenesCompra.map(
-          (orden) => orden.numeroOrden
+      if (ordenesCompraData) {
+        ordenes = ordenesCompraData.ordenes_compra.map(
+          (orden) => orden.numero_orden
         );
-        proveedor = multiplePurchaseOrderData.ordenesCompra[0].proveedor.nombre;
+        proveedor = ordenesCompraData.ordenes_compra[0].proveedor.nombre;
       } else {
         if (!purchaseOrderData?.ordenCompra?.numeroOrden) {
           throw new Error("Número de orden de compra no disponible");
@@ -56,9 +56,7 @@ export const useReceptionSubmission = ({
       const result = await createReception({
         ordenes,
         proveedor,
-        codigoProveedor: !jointReception
-          ? purchaseOrderData?.ordenCompra?.proveedor?.codigo
-          : multiplePurchaseOrderData?.ordenesCompra[0]?.proveedor?.codigo,
+        codigoProveedor: ordenesCompraData?.ordenes_compra[0]?.proveedor?.codigo ?? "",
         productos_recibidos,
         duracion: String(receptionTimer),
       });
@@ -69,9 +67,7 @@ export const useReceptionSubmission = ({
           billImage,
           result.data.recepcion,
           tienda || "",
-          !jointReception
-            ? purchaseOrderData?.ordenCompra?.numeroOrden
-            : multiplePurchaseOrderData?.ordenesCompra[0]?.numeroOrden
+          ordenesCompraData?.ordenes_compra[0]?.numero_orden ?? ""
         );
 
         resetStore();

@@ -40,6 +40,7 @@ api.interceptors.response.use(
         "Ocurrió un error inesperado. Por favor, intente nuevamente.";
     }
 
+    console.log("Error en la peticiónnnnnn:", msj, error);
     openSnackbar(msj, "error");
     if (!import.meta.env.PROD) {
       console.error("Error en la petición:", msj, error);

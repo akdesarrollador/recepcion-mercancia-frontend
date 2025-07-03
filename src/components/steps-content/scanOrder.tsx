@@ -23,7 +23,7 @@ const ScanOrder = () => {
   const [orderNumber, setOrderNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const iconButtonRef = useRef<HTMLButtonElement>(null);
-  const { purchaseOrderData, setPurchaseOrderData, openSnackbar } =
+  const { ordenesCompraData, addOrdenCompra, limpiarOrdenesCompraData, openSnackbar } =
     useGlobalStore();
   const { tienda } = useAuthStore(); // Obtiene la tienda actual del store
   const textFieldRef = useInputFocus(); // Hook para manejar el foco del input
@@ -37,8 +37,15 @@ const ScanOrder = () => {
       setLoading(true);
       try {
         const response = await getPurchaseOrder(trimmedOrder);
+
+        if (response?.status === 404) {
+          openSnackbar("Orden de compra no encontrada.", "error");
+          limpiarOrdenesCompraData();
+          return;
+        }
+
         if (response?.status === 200) {
-          setPurchaseOrderData(response.data);
+          addOrdenCompra(response.data);
           if (response?.data?.productos?.length === 0) {
             openSnackbar(
               "La orden no tiene productos en esta sede.",
@@ -47,21 +54,17 @@ const ScanOrder = () => {
           }
         } else {
           openSnackbar("No se encontró la orden de compra.", "error");
-          setPurchaseOrderData(null);
+          limpiarOrdenesCompraData();
         }
       } catch (error) {
-        openSnackbar(
-          "Error al buscar la orden de compra. Por favor, inténtalo de nuevo.",
-          "error"
-        );
-        setPurchaseOrderData(null);
+        limpiarOrdenesCompraData();
         console.error("Error al buscar la orden de compra:", error);
       } finally {
         setLoading(false);
         setOrderNumber("");
       }
     },
-    [orderNumber, setPurchaseOrderData, openSnackbar]
+    [orderNumber, addOrdenCompra, openSnackbar, limpiarOrdenesCompraData]
   );
 
   return (
@@ -117,20 +120,20 @@ const ScanOrder = () => {
       </Box>
 
       <Box sx={sxOrderInfoBoxes}>
-        {purchaseOrderData && (
+        {ordenesCompraData && (
           <>
             <OrderInfoBox
               label="Recibiendo en"
               value={tienda || ""}
-              // value={purchaseOrderData?.ordenCompra?.recibirEn}
+            // value={purchaseOrderData?.ordenCompra?.recibirEn}
             />
             <OrderInfoBox
               label="Orden de compra"
-              value={purchaseOrderData?.ordenCompra.numeroOrden}
+              value={ordenesCompraData?.ordenes_compra[0]?.numero_orden}
             />
             <OrderInfoBox
               label="Proveedor"
-              value={purchaseOrderData?.ordenCompra?.proveedor?.nombre}
+              value={ordenesCompraData?.ordenes_compra[0]?.proveedor?.nombre}
             />
           </>
         )}

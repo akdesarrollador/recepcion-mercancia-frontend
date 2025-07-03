@@ -13,10 +13,8 @@ const ReceptionProgressModal = ({
   onClose,
 }: ReceptionProgressModalProps) => {
   const {
-    purchaseOrderData,
-    productsReceived,
-    multiplePurchaseOrderData,
-    jointReception,
+    ordenesCompraData,
+    productosRecibidos,
   } = useGlobalStore();
 
   return (
@@ -50,10 +48,8 @@ const ReceptionProgressModal = ({
             textAlign: "center",
           }}
         >
-          Ítems ingresados: {productsReceived.length || 0} /{" "}
-          {jointReception
-            ? multiplePurchaseOrderData?.productos?.length
-            : purchaseOrderData?.productos?.length}
+          Ítems ingresados: {productosRecibidos.length || 0} /{" "}
+          {ordenesCompraData?.productos?.length}
         </Typography>
       </Box>
 

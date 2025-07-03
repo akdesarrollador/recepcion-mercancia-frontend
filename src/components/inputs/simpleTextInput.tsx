@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import TextField from "@mui/material/TextField";
-import { SimpleTextInputProps } from "../../utils/interfaces/componentsProps";
+import { SimpleTextInputProps } from "../../utils/interfaces/component.props";
 import { X } from "lucide-react";
 
 const SimpleTextInput: React.FC<SimpleTextInputProps> = ({

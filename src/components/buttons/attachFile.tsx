@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import useGlobalStore from "../../store/useGlobalStore";
 import Box from "@mui/material/Box";
 import { sxIconBox, sxImgBox } from "../../styles/sxAttachFile";
-import { AttachFileProps } from "../../utils/interfaces/componentsProps";
+import { AttachFileProps } from "../../utils/interfaces/component.props";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",

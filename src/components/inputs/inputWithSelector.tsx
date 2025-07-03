@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Box, IconButton, InputBase, Menu, MenuItem, Paper } from "@mui/material";
 import { ChevronDown } from "lucide-react";
-import type { Option, InputWithSelectorProps } from "../../utils/interfaces/componentsProps";
+import type { Option, InputWithSelectorProps } from "../../utils/interfaces/component.props";
 import { sxInputBase, sxMenuItem, sxPaper, sxPaperPropsMenu, sxUnitSelectorBox } from "../../styles/sxInputWithSelector";
 
 const defaultOptions: Option[] = [
@@ -40,9 +40,9 @@ const InputWithSelector: React.FC<InputWithSelectorProps> = ({
     handleClose();
   }, [onUnitChange, handleClose]);
 
-  const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    onTextChange?.(event.target.value);
-  }, [onTextChange]);
+  // const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  //   onTextChange?.(event.target.value);
+  // }, [onTextChange]);
 
   return (
     <Box sx={{ position: "relative", width: fullWidth ? "100%" : "50%" }}>
@@ -97,10 +97,35 @@ const InputWithSelector: React.FC<InputWithSelectorProps> = ({
         {/* Text Input Section */}
         <InputBase
           value={textValue}
-          onChange={handleInputChange}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            // Reemplaza comas por puntos automáticamente
+            const value = event.target.value.replace(/,/g, ".");
+            onTextChange?.(value);
+          }}
           placeholder={placeholder}
           disabled={disabled}
           sx={sxInputBase}
+          inputProps={{
+            inputMode: "decimal",
+            pattern: "[0-9]*[.,]?[0-9]*",
+            // Prevent typing non-numeric characters
+            onBeforeInput: (e: React.FormEvent<HTMLInputElement>) => {
+              const input = (e as unknown as InputEvent).data;
+              if (
+                input &&
+                !/^[0-9.,]$/.test(input)
+              ) {
+                e.preventDefault();
+              }
+            },
+            // Prevent pasting non-numeric content
+            onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => {
+              const paste = e.clipboardData.getData("text");
+              if (!/^[0-9]*[.,]?[0-9]*$/.test(paste)) {
+                e.preventDefault();
+              }
+            },
+          }}
         />
       </Paper>
 
