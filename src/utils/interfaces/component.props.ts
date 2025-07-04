@@ -55,6 +55,7 @@ export interface SimpleTextInputProps {
   autoFocus?: boolean;
   onTripleClick?: () => void;
   disableTextSelect?: boolean;
+  variant?: VariantType;
 }
 
 export interface AddButtonProps {
@@ -128,3 +129,6 @@ export interface AddNewOrderModalProps {
   textCancelButton?: string;
   loaderText?: string;
 }
+
+export type VariantType = "text" | "int";
+

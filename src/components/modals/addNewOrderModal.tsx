@@ -203,6 +203,7 @@ const AddNewOrderModal = ({
             }}
             fontSize="12px"
             icon={<FileDigit color="#00000084" width={16} height={16} />}
+            variant="int"
           />
 
           <IconButton

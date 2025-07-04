@@ -40,10 +40,6 @@ const InputWithSelector: React.FC<InputWithSelectorProps> = ({
     handleClose();
   }, [onUnitChange, handleClose]);
 
-  // const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-  //   onTextChange?.(event.target.value);
-  // }, [onTextChange]);
-
   return (
     <Box sx={{ position: "relative", width: fullWidth ? "100%" : "50%" }}>
       <Paper
@@ -106,23 +102,49 @@ const InputWithSelector: React.FC<InputWithSelectorProps> = ({
           disabled={disabled}
           sx={sxInputBase}
           inputProps={{
-            inputMode: "decimal",
-            pattern: "[0-9]*[.,]?[0-9]*",
-            // Prevent typing non-numeric characters
+            inputMode: currentUnit.label === "Kg" ? "decimal" : "numeric",
+            pattern: currentUnit.label === "Kg" ? "^[0-9]+(\\.[0-9]*)?$" : "^[0-9]*$",
             onBeforeInput: (e: React.FormEvent<HTMLInputElement>) => {
               const input = (e as unknown as InputEvent).data;
-              if (
-                input &&
-                !/^[0-9.,]$/.test(input)
-              ) {
-                e.preventDefault();
+              const currentValue = (e.target as HTMLInputElement).value;
+              if (currentUnit.label === "Kg") {
+                // Solo permite números y un punto decimal, no al inicio ni al final
+                if (input && !/^[0-9.]$/.test(input)) {
+                  e.preventDefault();
+                  return;
+                }
+                if (input === "." && currentValue.includes(".")) {
+                  e.preventDefault();
+                  return;
+                }
+                if (input === "." && currentValue.length === 0) {
+                  e.preventDefault();
+                  return;
+                }
+                if (input === "." && currentValue.endsWith(".")) {
+                  e.preventDefault();
+                  return;
+                }
+              } else {
+                // Solo permite números enteros
+                if (input && !/^[0-9]$/.test(input)) {
+                  e.preventDefault();
+                  return;
+                }
               }
             },
-            // Prevent pasting non-numeric content
             onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => {
-              const paste = e.clipboardData.getData("text");
-              if (!/^[0-9]*[.,]?[0-9]*$/.test(paste)) {
-                e.preventDefault();
+              const paste = e.clipboardData.getData("text").replace(/,/g, ".");
+              if (currentUnit.label === "Kg") {
+                // Solo permite formato numérico decimal válido
+                if (!/^[0-9]+(\.[0-9]*)?$/.test(paste)) {
+                  e.preventDefault();
+                }
+              } else {
+                // Solo permite números enteros
+                if (!/^[0-9]+$/.test(paste)) {
+                  e.preventDefault();
+                }
               }
             },
           }}

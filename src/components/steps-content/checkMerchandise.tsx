@@ -175,6 +175,7 @@ const CheckMerchandise: React.FC = () => {
             value={unitsPerPackage === 0 ? "" : unitsPerPackage.toString()}
             setValue={(value: string) => setUnitsPerPackage(Number(value))}
             borderColor="#DADADA"
+            variant="int"
           />
         </Box>
 

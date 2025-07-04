@@ -26,6 +26,7 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
   autoFocus = false,
   onTripleClick,
   disableTextSelect = false,
+  variant = "text", // Nuevo prop para manejar enteros
 }) => {
   const internalRef = useRef<HTMLInputElement>(null);
   const showClearIcon = Boolean(value);
@@ -62,6 +63,35 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
     }, 0);
   };
 
+  // Nueva función para manejar solo enteros si variant === "int"
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+    if (variant === "int") {
+      val = val.replace(/\D/g, ""); // Solo números
+    }
+    setValue(val);
+  };
+
+  // Previene caracteres no numéricos si variant === "int"
+  const handleBeforeInput = (e: React.FormEvent<HTMLInputElement>) => {
+    if (variant === "int") {
+      const input = (e as unknown as InputEvent).data;
+      if (input && !/^[0-9]$/.test(input)) {
+        e.preventDefault();
+      }
+    }
+  };
+
+  // Previene pegar caracteres no numéricos si variant === "int"
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    if (variant === "int") {
+      const paste = e.clipboardData.getData("text");
+      if (!/^[0-9]+$/.test(paste)) {
+        e.preventDefault();
+      }
+    }
+  };
+
   return (
     <TextField
       onClick={handleTripleClick}
@@ -76,7 +106,7 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
       value={value}
       type="text"
       onKeyDown={onKeyDown}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={handleChange}
       InputProps={{
         readOnly: readonly,
         endAdornment:
@@ -114,6 +144,12 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
           MozUserSelect: disableTextSelect ? "none" : undefined,
           msUserSelect: disableTextSelect ? "none" : undefined,
         },
+        inputMode: variant === "int" ? "numeric" : undefined,
+        onBeforeInput: handleBeforeInput,
+        onPaste: handlePaste,
+      }}
+      inputProps={{
+        pattern: variant === "int" ? "[0-9]*" : undefined,
       }}
       sx={{
         width: inputWidth,
