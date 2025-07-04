@@ -12,20 +12,52 @@ import {
   sxOrderProductsReceivedProductsBox,
   sxReceptionsProductsBox,
 } from "../../styles/sxConfirmReception";
+import { useEffect, useState } from "react";
+import formatCounter from "../../utils/formatCounter";
+import Typography from "@mui/material/Typography";
 
 const ConfirmReception = () => {
   const {
     ordenesCompraData,
     productosRecibidos,
     jointReception,
+    receptionTimer,
+    setReceptionTimer,
   } = useGlobalStore();
   const circularValue = ordenesCompraData?.productos?.length &&
     ordenesCompraData?.productos?.length > 0
     ? (productosRecibidos.length / ordenesCompraData?.productos?.length) * 100
     : 0
+  const [time, setTime] = useState(receptionTimer || 0);
+
+  useEffect(() => {
+    // Sincroniza el estado local con el global al montar el componente
+    setTime(receptionTimer || 0);
+
+    const interval = setInterval(() => {
+      setTime(prevTime => {
+        const newTime = prevTime + 1;
+        setReceptionTimer(newTime);
+        return newTime;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [receptionTimer, setReceptionTimer]); // Ahora receptionTimer es una dependencia
+
 
   return (
     <Box sx={sxFatherBox}>
+      {/* Mostrar el contador en la parte superior derecha */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+        <Typography
+          sx={{
+            fontSize: "16px",
+            color: theme.palette.primary.main,
+          }}
+        >
+          {formatCounter(time)}
+        </Typography>
+      </Box>
       {/* Contenedor del icono, el progreso y el numero de orden */}
       <Box sx={sxIconProgressNumberBox}>
         {/* Contenedor del icono y el progreso */}

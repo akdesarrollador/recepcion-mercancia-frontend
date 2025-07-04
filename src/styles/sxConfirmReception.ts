@@ -5,6 +5,7 @@ export const sxFatherBox = {
   justifyContent: "space-between",
   width: "100%",
   height: "90%",
+mb: 4.7
 };
 
 export const sxIconProgressNumberBox = {

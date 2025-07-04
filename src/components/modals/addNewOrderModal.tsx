@@ -64,25 +64,6 @@ const AddNewOrderModal = ({
         }
 
         if (response?.status === 200) {
-          if (response?.data?.productos?.length === 0) {
-            openSnackbar(
-              "La orden no tiene productos en esta sede.",
-              "warning"
-            );
-            return setPurchaseOrderDetected(null);
-          }
-
-          if (
-            response?.data?.ordenCompra?.numeroOrden ===
-            ordenesCompraData?.ordenes_compra[0]?.numero_orden
-          ) {
-            openSnackbar(
-              "La orden de compra ingresada corresponde con la orden en curso.",
-              "error"
-            );
-            return setPurchaseOrderDetected(null);
-          }
-
           if (
             response?.data?.ordenCompra?.proveedor?.codigo !==
             (ordenesCompraData?.ordenes_compra[0]?.proveedor?.codigo)
@@ -90,6 +71,26 @@ const AddNewOrderModal = ({
             openSnackbar(
               "La orden de compra ingresada corresponde a un proveedor diferente.",
               "error"
+            );
+            return setPurchaseOrderDetected(null);
+          }
+
+          if (
+            ordenesCompraData?.ordenes_compra.some(
+              (orden) => orden.numero_orden === response.data.ordenCompra.numeroOrden
+            )
+          ) {
+            openSnackbar(
+              "La orden de compra ingresada ya ha sido añadida a la recepción.",
+              "error"
+            );
+            return setPurchaseOrderDetected(null);
+          }
+
+          if (response?.data?.productos?.length === 0) {
+            openSnackbar(
+              "La orden no tiene productos en esta sede.",
+              "warning"
             );
             return setPurchaseOrderDetected(null);
           }

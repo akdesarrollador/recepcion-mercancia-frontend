@@ -30,6 +30,7 @@ const CheckMerchandise: React.FC = () => {
   const {
     ordenesCompraData,
     setReceptionTimer,
+    receptionTimer
   } = useGlobalStore();
   const [openModal, setOpenModal] = useState(false);
   const [openNewOrderModal, setOpenNewOrderModal] = useState(false);
@@ -50,7 +51,8 @@ const CheckMerchandise: React.FC = () => {
     loading,
     isReceiveProductDisabled
   } = useCheckMerchandise();
-  const [time, setTime] = useState(0);
+  // Inicializa el estado con el valor global actual
+  const [time, setTime] = useState(receptionTimer || 0);
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
@@ -68,13 +70,17 @@ const CheckMerchandise: React.FC = () => {
     };
   }, []);
 
+  // Modifica el useEffect para usar el valor actualizado
   useEffect(() => {
     const interval = setInterval(() => {
-      setTime(time + 1);
-      setReceptionTimer(time + 1);
+      setTime(prevTime => {
+        const newTime = prevTime + 1;
+        setReceptionTimer(newTime);
+        return newTime;
+      });
     }, 1000);
     return () => clearInterval(interval);
-  }, [time, setReceptionTimer]);
+  }, [setReceptionTimer]); // Elimina 'time' de las dependencias
 
   return (
     <Box sx={sxFatherBox}>
