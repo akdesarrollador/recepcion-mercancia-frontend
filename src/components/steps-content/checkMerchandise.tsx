@@ -13,7 +13,7 @@ import {
   sxReceiveProductButton,
   sxFormSecondRowBox,
   sxFormFirstRowBox,
-  sxSeeProgressButton,
+  // sxSeeProgressButton,
   sxOrderNumberAndButtonBox,
 } from "../../styles/sxCheckMerchandise";
 import { useCheckMerchandise } from "../../hooks/useCheckMerchandise";
@@ -25,6 +25,8 @@ import useGlobalStore from "../../store/useGlobalStore";
 import Typography from "@mui/material/Typography";
 import formatCounter from "../../utils/formatCounter";
 import AddNewOrderModal from "../modals/addNewOrderModal";
+import AllOrdersModal from "../modals/allOrdersModal";
+import ReceptionOptionsMenu from '../buttons/receptionOptions';
 
 const CheckMerchandise: React.FC = () => {
   const {
@@ -34,6 +36,7 @@ const CheckMerchandise: React.FC = () => {
   } = useGlobalStore();
   const [openModal, setOpenModal] = useState(false);
   const [openNewOrderModal, setOpenNewOrderModal] = useState(false);
+  const [openAllOrdersModal, setOpenAllOrdersModal] = useState(false);
   const {
     receivedProduct,
     setReceivedProduct,
@@ -111,6 +114,7 @@ const CheckMerchandise: React.FC = () => {
         <Box sx={sxOrderNumberAndButtonBox}>
           <SimpleTextInput
             onTripleClick={() => setOpenNewOrderModal(true)}
+            onDoubleClick={() => setOpenAllOrdersModal(true)}
             disableTextSelect={true}
             readonly
             inputWidth="50%"
@@ -125,7 +129,7 @@ const CheckMerchandise: React.FC = () => {
             setValue={() => { }}
             textAlign="center"
           />
-          <Button
+          {/* <Button
             onClick={() => setOpenModal(true)}
             sx={{
               ...sxSeeProgressButton,
@@ -134,7 +138,8 @@ const CheckMerchandise: React.FC = () => {
             }}
           >
             Ver Progreso
-          </Button>
+          </Button> */}
+          <ReceptionOptionsMenu />
         </Box>
       </Box>
 
@@ -227,6 +232,11 @@ const CheckMerchandise: React.FC = () => {
         open={openNewOrderModal}
         onClose={() => setOpenNewOrderModal(false)}
         label="Añadir nueva orden a la recepción"
+      />
+
+      <AllOrdersModal
+        open={openAllOrdersModal}
+        onClose={() => setOpenAllOrdersModal(false)}
       />
     </Box>
   );

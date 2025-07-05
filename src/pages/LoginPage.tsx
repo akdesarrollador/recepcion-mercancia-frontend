@@ -15,6 +15,9 @@ import useFullScreenModal from "../hooks/useFullScreenModal";
 import useInputFocus from "../hooks/useInputFocus";
 import { useAuthStore } from "../store/useAuthStore";
 import useGlobalStore from "../store/useGlobalStore";
+import { Info } from 'lucide-react';
+import IconButton from "@mui/material/IconButton";
+import FeedbackModal from "../components/modals/feedbackModal";
 
 const LoginPage = () => {
   const [password, setPassword] = useState("");
@@ -25,6 +28,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { onLogin, isLoggedIn } = useAuthStore();
   const { openSnackbar } = useGlobalStore();
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   if (isLoggedIn) return <Navigate to="/" />;
 
@@ -44,67 +48,88 @@ const LoginPage = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", mt: -1, p: 0 }}>
-      {/* Modal para sugerir pantalla completa */}
-      <FullScreenModal
-        open={showFullScreenModal}
-        onClose={() => setShowFullScreenModal(false)}
-      />
-
-      {/* Imagen con la caja */}
-      <Box
-        component="img"
-        src={org === "AK" ? ak_login : org === "FC" ? fc_login : hc_login}
-        sx={sxImageBox}
-      />
-
-      {/* Texto de bienvenida */}
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        sx={{ zIndex: 10, position: "relative" }}
-        mt={-5}
-      >
-        <Typography
-          fontWeight="bold"
-          fontSize="32px"
-          sx={{ userSelect: "none" }}
-        >
-          ¡Bienvenido!
-        </Typography>
-      </Box>
-
-      {/* Formulario de inicio de sesión */}
-      <Box
-        component="form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (password !== "") handleSubmit();
+    <>
+      <IconButton
+        style={{
+          position: "fixed",
+          top: 16,
+          left: 16,
+          zIndex: 1300,
+          color: '#ffffffa1',
         }}
-        sx={sxLoginFormBox}
+        onClick={() => setShowFeedbackModal(true)}
       >
-        <ColoredTextInput
-          ref={textFieldRef}
-          autoFocus={true}
-          autoComplete="off"
-          value={password}
-          setValue={setPassword}
-          placeholder="Ingresa tu clave de acceso asignada"
-          label="Clave de acceso"
-          borderColor={theme.palette.primary.main}
-          icon={<LockKeyhole color={theme.palette.primary.main} />}
-          password={true}
+        <Info />
+      </IconButton>
+      <Box sx={{ display: "flex", flexDirection: "column", mt: -1, p: 0 }}>
+        {/* Modal para sugerir pantalla completa */}
+        <FullScreenModal
+          open={showFullScreenModal}
+          onClose={() => setShowFullScreenModal(false)}
         />
-        <SimpleButton
-          backgroundColor={theme.palette.primary.main}
-          label="Ingresar"
-          onClick={handleSubmit}
-          disabled={password === ""}
-          loading={isLoading}
+
+        {/* Imagen con la caja */}
+        <Box
+          component="img"
+          src={org === "AK" ? ak_login : org === "FC" ? fc_login : hc_login}
+          sx={sxImageBox}
+          draggable={false}
+          onDragStart={(e) => e.preventDefault()}
         />
+
+        {/* Texto de bienvenida */}
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ zIndex: 10, position: "relative" }}
+          mt={-5}
+        >
+          <Typography
+            fontWeight="bold"
+            fontSize="32px"
+            sx={{ userSelect: "none" }}
+          >
+            ¡Bienvenido!
+          </Typography>
+        </Box>
+
+        {/* Formulario de inicio de sesión */}
+        <Box
+          component="form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (password !== "") handleSubmit();
+          }}
+          sx={sxLoginFormBox}
+        >
+          <ColoredTextInput
+            ref={textFieldRef}
+            autoFocus={true}
+            autoComplete="off"
+            value={password}
+            setValue={setPassword}
+            placeholder="Ingresa tu clave de acceso asignada"
+            label="Clave de acceso"
+            borderColor={theme.palette.primary.main}
+            icon={<LockKeyhole color={theme.palette.primary.main} />}
+            password={true}
+          />
+          <SimpleButton
+            backgroundColor={theme.palette.primary.main}
+            label="Ingresar"
+            onClick={handleSubmit}
+            disabled={password === ""}
+            loading={isLoading}
+          />
+        </Box>
       </Box>
-    </Box>
+
+      <FeedbackModal
+        open={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+      />
+    </>
   );
 };
 

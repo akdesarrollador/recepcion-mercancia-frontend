@@ -24,7 +24,8 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
   inputRef,
   autoComplete = "off",
   autoFocus = false,
-  onTripleClick,
+  // onTripleClick,
+  onDoubleClick,
   disableTextSelect = false,
   variant = "text", // Nuevo prop para manejar enteros
 }) => {
@@ -44,10 +45,17 @@ const SimpleTextInput: React.FC<SimpleTextInputProps> = ({
     }
     lastClickTimeRef.current = now;
 
-    if (clickCountRef.current === 3) {
+    // if (clickCountRef.current === 3) {
+    //   clickCountRef.current = 0;
+    //   if (onTripleClick) {
+    //     onTripleClick();
+    //   }
+    // }
+
+    if (clickCountRef.current === 2) {
       clickCountRef.current = 0;
-      if (onTripleClick) {
-        onTripleClick();
+      if (onDoubleClick) {
+        onDoubleClick();
       }
     }
   };

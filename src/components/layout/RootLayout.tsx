@@ -43,8 +43,8 @@ const RootLayout: React.FC<RootLayoutProps> = ({
             organization === "AK"
               ? ak_logo
               : organization === "FC"
-              ? fc_logo
-              : hc_logo
+                ? fc_logo
+                : hc_logo
           }
         />
         {!noLogout && (

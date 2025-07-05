@@ -56,6 +56,7 @@ export interface SimpleTextInputProps {
   onTripleClick?: () => void;
   disableTextSelect?: boolean;
   variant?: VariantType;
+  onDoubleClick?: () => void;
 }
 
 export interface AddButtonProps {

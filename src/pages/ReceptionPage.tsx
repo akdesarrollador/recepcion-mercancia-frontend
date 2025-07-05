@@ -33,6 +33,7 @@ const ReceptionPage = () => {
     openSnackbar,
     setReceptionTimer,
     limpiarProductosRecibidos,
+    limpiarOrdenesCompraData
   } = useGlobalStore();
 
   const { loading, finishReception, state } = useReceptionSubmission({
@@ -61,6 +62,7 @@ const ReceptionPage = () => {
   const handleAcceptWarning = () => {
     setReceptionTimer(0);
     setActiveStep((prev) => prev - 1);
+    limpiarOrdenesCompraData();
     limpiarProductosRecibidos();
     setOpenWarningModal(false)
   }
