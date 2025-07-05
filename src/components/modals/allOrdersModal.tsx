@@ -4,11 +4,13 @@ import AllOrdersTable from "../tables/allOrdersTable";
 interface AllOrdersModalProps {
     open: boolean;
     onClose: () => void;
+    allowDelete?: boolean;
 }
 
 const AllOrdersModal = ({
     open,
     onClose,
+    allowDelete = false,
 }: AllOrdersModalProps) => {
 
     return (
@@ -48,7 +50,7 @@ const AllOrdersModal = ({
 
             {/* Tabla en el medio, scroll si es necesario */}
             <Box sx={{ flexGrow: 1, overflow: "auto" }}>
-                <AllOrdersTable />
+                <AllOrdersTable allowDelete={allowDelete} />
             </Box>
 
             {/* Botón fijo en la parte inferior */}

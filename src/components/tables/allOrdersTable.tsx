@@ -10,6 +10,10 @@ import theme from '../../theme/theme';
 import { Trash2 } from 'lucide-react';
 import IconButton from "@mui/material/IconButton";
 
+interface AllOrdersTableProps {
+    allowDelete?: boolean;
+}
+
 const StyledTableCell = styled(TableCell)(() => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: "#FFF",
@@ -34,7 +38,7 @@ const StyledTableRow = styled(TableRow)(() => ({
     },
 }));
 
-const AllOrdersTable = () => {
+const AllOrdersTable = ({ allowDelete = false }: AllOrdersTableProps) => {
     const { ordenesCompraData } = useGlobalStore();
     return (
         <TableContainer
@@ -47,15 +51,18 @@ const AllOrdersTable = () => {
                         <StyledTableRow key={orden.id} sx={{ alignContent: "center" }}>
                             <StyledTableCell align="center">{index + 1}</StyledTableCell>
                             <StyledTableCell align="center" sx={{ color: theme.palette.primary.main }}>{orden.numero_orden}</StyledTableCell>
-                            <StyledTableCell align="center">
-                                <IconButton>
-                                    <Trash2
-                                        size={16}
-                                        color="#d33333"
-                                    // onClick={() => setOpenModal(true)}
-                                    />
-                                </IconButton>
-                            </StyledTableCell>
+                            {allowDelete && (
+                                <StyledTableCell align="center">
+                                    <IconButton>
+                                        <Trash2
+                                            size={16}
+                                            color="#d33333"
+                                        // onClick={() => setOpenModal(true)}
+                                        />
+                                    </IconButton>
+                                </StyledTableCell>
+                            )
+                            }
                         </StyledTableRow>
                     ))}
                 </TableBody>

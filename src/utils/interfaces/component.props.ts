@@ -95,6 +95,17 @@ export interface InputWithSelectorProps {
   fullWidth?: boolean;
 }
 
+export interface UnitSelectorProps {
+  current: Option
+  options: Option[]
+  disabled?: boolean
+  anchorEl: HTMLElement | null
+  onOpen(e: React.MouseEvent<HTMLElement>): void
+  onSelect(opt: Option): void
+  onClose(): void
+}
+
+
 export interface SnackBarProps {
   severity: "error" | "success" | "info" | "warning";
   message: string;
@@ -104,6 +115,12 @@ export type Option = {
   value: string; // Texto completo
   label: string; // Abreviación
 };
+
+export const defaultUnitsOptions: Option[] = [
+  { value: "Unidades", label: "U" },
+  { value: "Bultos", label: "B" },
+  { value: "Kilogramos", label: "Kg" },
+];
 
 export interface AttachFileProps {
   icon: React.ReactNode;

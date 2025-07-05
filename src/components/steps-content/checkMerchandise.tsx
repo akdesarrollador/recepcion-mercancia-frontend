@@ -229,6 +229,7 @@ const CheckMerchandise: React.FC = () => {
       <AllOrdersModal
         open={openAllOrdersModal}
         onClose={() => setOpenAllOrdersModal(false)}
+        allowDelete={true}
       />
     </Box>
   );
