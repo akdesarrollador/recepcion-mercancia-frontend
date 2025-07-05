@@ -5,7 +5,13 @@ import MenuItem from '@mui/material/MenuItem';
 import { sxSeeProgressButton } from '../../styles/sxCheckMerchandise';
 import theme from '../../theme/theme';
 
-const ReceptionOptionsMenu = () => {
+interface ReceptionOptionsMenuProps {
+    clickHandlers: Array<() => void>;
+}
+
+const ReceptionOptionsMenu: React.FC<ReceptionOptionsMenuProps> = ({
+    clickHandlers
+}) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -16,7 +22,7 @@ const ReceptionOptionsMenu = () => {
     };
 
     return (
-        <div>
+        <div style={{ width: '50%' }}>
             <Button
                 sx={{
                     ...sxSeeProgressButton,
@@ -43,9 +49,9 @@ const ReceptionOptionsMenu = () => {
                     },
                 }}
             >
-                <MenuItem onClick={handleClose}>Ver Progreso</MenuItem>
-                <MenuItem onClick={handleClose}>Añadir orden</MenuItem>
-                <MenuItem onClick={handleClose}>Pausar recepción</MenuItem>
+                <MenuItem onClick={clickHandlers[0]}>Ver Progreso</MenuItem>
+                <MenuItem onClick={clickHandlers[1]}>Añadir orden</MenuItem>
+                <MenuItem onClick={clickHandlers[2]}>Pausar recepción</MenuItem>
             </Menu>
         </div>
     );

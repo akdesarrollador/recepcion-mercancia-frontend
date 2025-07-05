@@ -13,7 +13,6 @@ import {
   sxReceiveProductButton,
   sxFormSecondRowBox,
   sxFormFirstRowBox,
-  // sxSeeProgressButton,
   sxOrderNumberAndButtonBox,
 } from "../../styles/sxCheckMerchandise";
 import { useCheckMerchandise } from "../../hooks/useCheckMerchandise";
@@ -113,7 +112,6 @@ const CheckMerchandise: React.FC = () => {
         />
         <Box sx={sxOrderNumberAndButtonBox}>
           <SimpleTextInput
-            onTripleClick={() => setOpenNewOrderModal(true)}
             onDoubleClick={() => setOpenAllOrdersModal(true)}
             disableTextSelect={true}
             readonly
@@ -129,17 +127,11 @@ const CheckMerchandise: React.FC = () => {
             setValue={() => { }}
             textAlign="center"
           />
-          {/* <Button
-            onClick={() => setOpenModal(true)}
-            sx={{
-              ...sxSeeProgressButton,
-              border: `1px solid ${theme.palette.primary.main}`,
-              color: theme.palette.primary.main,
-            }}
-          >
-            Ver Progreso
-          </Button> */}
-          <ReceptionOptionsMenu />
+          <ReceptionOptionsMenu clickHandlers={[
+            () => setOpenModal(true),
+            () => setOpenNewOrderModal(true),
+            () => { }
+          ]} />
         </Box>
       </Box>
 
